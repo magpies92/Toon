@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" th:href="@{/vars.css}" />
+	<link rel="stylesheet" th:href="@{/style.css}" />
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<title>툰 코리아</title>
+</head>
+
+<body>
+	<div class="toon">
+		<div class="header">
+			<a th:href="@{/main}" class="headerLogo">
+				<img th:src="@{images/logo1.png}">
+			</a>
+			<div class="headerSubject">
+				<div class="headerTitle">대한민국 모든 툰 아미들의 외침 툰 코리아</div>
+				<img th:src="@{images/headerBg.jpg}" class="headerBg">
+			</div>
+		</div>
+		<div class="mainFrame">
+			<div class="left">
+				<div class="login">
+					<div class="loginHeader">
+						<span th:text="로그인"></span><br />
+					</div>
+					<form action="/login" id="loginForm" class="loginContents" method="post"
+						th:if="${session.userId == null}">
+						<div class="loginBox">
+							<div class="idPw">
+								<input type="text" class="id" name="id" placeholder="Id" />
+								<input type="password" class="pass" name="pass" placeholder="Password" />
+							</div>
+							<input type="submit" value="로그인" class="buttonLogin" />
+						</div>
+						<div class="loginEtc">
+							<a th:href="@{/join}" class="buttonJoin">회원가입</a>
+							<a th:href="@{/idpwSearch}" class="searchIdpw">ID/PW 찾기</a>
+						</div>
+					</form>
+					<div th:if="${session.userId != null}" id="userInfo">
+						<div th:each="user : ${userList}">
+							<div th:if="${session.userId eq user.id}">
+								<div th:text="${user.nickname + '님'}" id="userNickname"></div>
+								<button onclick="logOut()" class="buttonLogout">로그아웃</button>
+								<div th:text="'레벨: ' + ${user.userLevel}" id="userLevel"></div>
+								<div th:text="'포인트: ' + ${user.userPoint}" id="userPoint"></div>
+								<div th:text="${user.userAuthority}" id="userAuthority"></div>
+								<a th:href="@{/mypage}">내 정보로 이동</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="notice">
+					<div class="noticeHeader">
+						<span th:text="공지사항"></span>
+						<a th:href="@{/notice}" class="more">더보기</a>
+						<br />
+					</div>
+					<div class="noticeContents">
+						<table>
+							<tbody>
+								<tr th:each="notice : ${noticeList}">
+									<td th:text="${notice.noticeId}" style="display: none;"></td>
+									<td class=mainTrNoticeTitle>
+										<span>-</span>
+										<a th:href="@{'/notice/' + ${notice.noticeId}}"
+											th:text="${#strings.length(notice.title) &gt; 12 ? #strings.substring(notice.title, 0, 12) + '...' : notice.title}"></a>
+									</td>
+									<td th:text="${notice.nickname}" style="display: none;"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="banner">
+					<div class="bannerHeader">
+						<span th:text="배너"></span>
+					</div>
+					<div class="bannerContents">
+						<div class="banner1">
+							<a th:href="@{https://www.youtube.com/@NUFC}" target="_blank">
+								<img th:src="@{images/newcastleYoutube.jpg}">
+							</a>
+						</div>
+						<div class="banner2">
+							<a th:href="@{https://www.instagram.com/nufc/}" target="_blank">
+								<img th:src="@{images/newcastleInsta.png}">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="center">
+				<div class="contents">
+					<div class="contentsHeader">
+						<span th:utext="계정찾기"></span>
+					</div>
+					<div class="contentsContents">
+						<div>
+							<h2>이메일 주소로 계정찾기</h2>
+							<p>가입시 입력한 이메일 주소로 아이디를 찾을 수 있습니다</p0>
+							<div>
+								<input type="text" name="email" id="emailInput" placeholder="이메일">
+								<button type="button" onclick="findId()">아이디 찾기</button>
+							</div>
+						</div>
+						<div>
+							<h2>질문/답변으로 비밀번호 재설정</h2>
+							<p>가입시 질문/답변으로 비밀번호를 재설정 할 수 있습니다</p>
+							<div>
+								<input type="text" id="inputId" placeholder="아이디">
+								<input type="email" id="inputEmail" placeholder="이메일">
+							</div>
+							<div>
+								<select name="passQuestion" id="passQuestion">
+									<option>질문을 선택하세요</option>
+									<option value="1">내 보물 1호는?</option>
+									<option value="2">내가 졸업한 초등학교는?</option>
+									<option value="3">내가 좋아하는 가수는?</option>
+									<option value="4">내가 좋아하는 색깔은?</option>
+									<option value="5">내가 좋아하는 스포츠팀은?</option>
+								</select>
+								<input type="text" id="passAnswer" placeholder="답변을 입력하세요">
+								<button onclick="resetPass()">비밀번호 재설정</button>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="right">
+				<div class="menu">
+					<div class="menuHeader">
+						<span th:text="메뉴"></span>
+					</div>
+					<div class="menuContents">
+						<ul>
+							<hr />
+							<li>
+								<a th:href="@{/notice}" class="">공지사항</a>
+							</li>
+							<hr />
+							<li>
+								<ul>컨텐츠
+									<li><a th:href="@{/news}" class="">뉴스</a></li>
+									<li><a th:href="@{/video}" class="">영상</a></li>
+								</ul>
+							</li>
+
+							<hr />
+							<li>
+								<ul>게시판
+									<li><a th:href="@{/board1}" class="">축구이야기</a></li>
+									<li><a th:href="@{/board2}" class="">사는이야기</a></li>
+									<li><a th:href="@{/matchday}" class="">매치데이</a></li>
+								</ul>
+							</li>
+							<hr />
+							<li>
+								<ul>정보
+									<li><a th:href="@{/profile}" class="">프로필</li>
+									<li><a th:href="@{/stadium}" class="">경기장</li>
+									<li><a th:href="@{/manager}" class="">감독</li>
+									<li><a th:href="@{/squad}" class="">스쿼드</li>
+								</ul>
+							</li>
+							<hr />
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<label class="copyRight">
+				<a th:href="@{/admin}" class="copy1">Admin Page</a>
+				<span> | </span>
+				<a th:href="@{/punish}" class="copy1">Punishiment Log</a>
+				<span> | </span>
+				<a th:href="@{/about}" class="copy1">About 툰코리아</a>
+				</br>
+				<span class="copy2">이 페이지는 개인프로젝트 페이지입니다</span>
+			</label>
+		</div>
+	</div>
+</body>
+<script>
+
+	function findId() {
+		// 폼 데이터를 가져옴
+		var formData = {
+			email: document.getElementById('emailInput').value
+		};
+
+		// 서버로 폼 데이터를 전송하는 비동기 요청
+		$.ajax({
+			type: 'GET',
+			url: '/findIdByEmail',
+			data: formData,
+			success: function (id) {
+				// 서버에서 받아온 id 값을 표시
+				if (id !== "not found") {
+					alert('찾으시는 ID는 ' + id + ' 입니다.');
+				} else {
+					alert('해당 이메일에 대한 ID를 찾을 수 없습니다.');
+				}
+			},
+			error: function () {
+				// 에러 처리 로직 추가
+				alert('서버와의 통신 중 오류가 발생했습니다.');
+			}
+		});
+
+		// 폼 제출 후에는 기본 동작을 막기
+		return false;
+	}
+
+
+	// 클라이언트 사이드
+	function resetPass() {
+		var formData = {
+			id: document.getElementById('inputId').value,
+			email: document.getElementById('inputEmail').value,
+			question: document.getElementById('passQuestion').value,
+			answer: document.getElementById('passAnswer').value
+		};
+
+		$.ajax({
+			type: 'POST',
+			url: '/resetPassword',
+			data: formData,
+			success: function (result) {
+				if (result === "success") {
+					// 서버에서 성공적으로 확인된 경우 팝업 창 띄우기
+					var userId = document.getElementById('inputId').value; // 사용자 id 가져오기
+					var popup = window.open("/passUpdate?id=" + userId, "_blank", "width=500, height=500");
+
+					popup.onload = function () {
+						popup.resizeTo(500, 350);
+					};
+
+				} else if (result === "invalid") {
+					alert('입력한 정보가 올바르지 않습니다.');
+				} else {
+					// 오류 처리 로직 추가
+					alert('서버에서 오류가 발생했습니다.');
+
+				}
+			}
+		})
+	}
+</script>
+
+
+</html>

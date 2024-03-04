@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "image.upload.path",
+    "type": "java.lang.String",
+    "description": "A description for 'image.upload.path'"
+  },
+  {
+    "name": "resource.location",
+    "type": "java.lang.String",
+    "description": "A description for 'resource.location'"
+  },
+  {
+    "name": "resource.handler",
+    "type": "java.lang.String",
+    "description": "A description for 'resource.handler'"
+  },
+  {
+    "name": "javax.net.debug",
+    "type": "java.lang.String",
+    "description": "A description for 'javax.net.debug'"
+  },
+  {
+    "name": "upload.path",
+    "type": "java.lang.String",
+    "description": "A description for 'upload.path'"
+  },
+  {
+    "name": "spring.http.multipart.encoding",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.http.multipart.encoding'"
+  },
+  {
+    "name": "spring.jpa.format-sql",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.jpa.format-sql'"
+  }
+]}

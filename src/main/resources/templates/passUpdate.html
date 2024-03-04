@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" th:href="@{/vars.css}" />
+	<link rel="stylesheet" th:href="@{/style.css}" />
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<title>비밀번호 변경</title>
+</head>
+
+<body>
+
+	<h3>비밀번호 변경</h3>
+
+	<label for="password1">비밀번호:</label>
+	<input type="password" id="password1" name="password1" oninput="checkPasswordLength()"><br>
+	<label for="password2">비밀번호 확인:</label>
+	<input type="password" id="password2" name="password2" oninput="checkPasswordMatch()"><br>
+	<span id="passwordLengthMessage" style="color: red;"></span>
+	<span id="passwordMismatch" style="color: red;"></span>
+	<br>
+	<button onclick="updatePass()">비밀번호 변경</button>
+
+	<script>
+
+		// 패스워드 길이 확인
+		function checkPasswordLength() {
+			var password = $("#password1").val();
+			var lengthMessage = document.getElementById("passwordLengthMessage");
+
+			if (password.length < 6 || password.length > 20) {
+				lengthMessage.innerHTML = "비밀번호는 6글자 이상 20글자 이하로 설정해야합니다.";
+				lengthMessage.style.color = "red";
+			} else {
+				lengthMessage.innerHTML = "";
+			}
+		}
+
+		// 패스워드 일치 여부 확인
+		function checkPasswordMatch() {
+			var password = $("#password1").val();
+			var password2 = $("#password2").val();
+			var mismatchMessage = document.getElementById("passwordMismatch");
+
+			if (password !== password2) {
+				mismatchMessage.innerHTML = "비밀번호가 일치하지 않습니다.";
+				mismatchMessage.style.color = "red";
+			} else {
+				mismatchMessage.innerHTML = "비밀번호가 일치합니다.";
+				mismatchMessage.style.color = "green";
+			}
+		}
+
+
+		// 비밀번호 변경
+		function updatePass() {
+			// 현재 URL에서 id 값을 가져옴
+			var userId = new URLSearchParams(window.location.search).get('id');
+			var newPassword = $("#password1").val();
+
+			// 패스워드 길이 확인
+			var lengthMessage = document.getElementById("passwordLengthMessage");
+			if (newPassword.length < 6 || newPassword.length > 20) {
+				lengthMessage.innerHTML = "비밀번호는 6글자 이상 20글자 이하로 설정해야합니다.";
+				lengthMessage.style.color = "red";
+				return; // 비밀번호 길이 조건에 맞지 않으면 중단
+			} else {
+				lengthMessage.innerHTML = "";
+			}
+
+			// AJAX를 통한 서버 요청
+			$.ajax({
+				type: 'POST',
+				url: '/updatePassword', // 실제 서버 엔드포인트에 맞게 수정
+				data: {
+					userId: userId,
+					newPassword: newPassword
+				},
+				success: function (result) {
+					if (result === "success") {
+						alert('비밀번호가 성공적으로 변경되었습니다.');
+						// 팝업 창 바로 닫기
+						window.opener.postMessage('closePopup', '*');
+						window.close();
+					} else {
+						alert('비밀번호 변경에 실패했습니다.');
+					}
+				},
+				error: function () {
+					alert('서버 오류가 발생했습니다.');
+				}
+			});
+		}
+	</script>
+
+</body>
+
+</html>

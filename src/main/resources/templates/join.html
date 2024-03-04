@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" th:href="@{/vars.css}" />
+	<link rel="stylesheet" th:href="@{/style.css}" />
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<title>툰 코리아</title>
+</head>
+
+<body>
+	<div class="toon">
+		<div class="header">
+			<a th:href="@{/main}" class="headerLogo">
+				<img th:src="@{images/logo1.png}">
+			</a>
+			<div class="headerSubject">
+				<div class="headerTitle">대한민국 모든 툰 아미들의 외침 툰 코리아</div>
+				<img th:src="@{images/headerBg.jpg}" class="headerBg">
+			</div>
+		</div>
+		<div class="mainFrame">
+			<div class="left">
+				<div class="login">
+					<div class="loginHeader">
+						<span th:text="로그인"></span><br />
+					</div>
+					<form action="/login" id="loginForm" class="loginContents" method="post"
+						th:if="${session.userId == null}">
+						<div class="loginBox">
+							<div class="idPw">
+								<input type="text" class="id" name="id" placeholder="Id" />
+								<input type="password" class="pass" name="pass" placeholder="Password" />
+							</div>
+							<input type="submit" value="로그인" class="buttonLogin" />
+						</div>
+						<div class="loginEtc">
+							<a th:href="@{/join}" class="buttonJoin">회원가입</a>
+							<a th:href="@{/idpwSearch}" class="searchIdpw">ID/PW 찾기</a>
+						</div>
+					</form>
+					<div th:if="${session.userId != null}" id="userInfo">
+						<div th:each="user : ${userList}">
+							<div th:if="${session.userId eq user.id}">
+								<div th:text="${user.nickname + '님'}" id="userNickname"></div>
+								<button onclick="logOut()" class="buttonLogout">로그아웃</button>
+								<div th:text="'레벨: ' + ${user.userLevel}" id="userLevel"></div>
+								<div th:text="'포인트: ' + ${user.userPoint}" id="userPoint"></div>
+								<div th:text="${user.userAuthority}" id="userAuthority"></div>
+								<a th:href="@{/mypage}">내 정보로 이동</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="notice">
+					<div class="noticeHeader">
+						<span th:text="공지사항"></span>
+						<a th:href="@{/notice}" class="more">더보기</a>
+						<br />
+					</div>
+					<div class="noticeContents">
+						<table>
+							<tbody>
+								<tr th:each="notice : ${noticeList}">
+									<td th:text="${notice.noticeId}" style="display: none;"></td>
+									<td class=mainTrNoticeTitle>
+										<span>-</span>
+										<a th:href="@{'/notice/' + ${notice.noticeId}}"
+											th:text="${#strings.length(notice.title) &gt; 12 ? #strings.substring(notice.title, 0, 12) + '...' : notice.title}"></a>
+									</td>
+									<td th:text="${notice.nickname}" style="display: none;"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="banner">
+					<div class="bannerHeader">
+						<span th:text="배너"></span>
+					</div>
+					<div class="bannerContents">
+						<div class="banner1">
+							<a th:href="@{https://www.youtube.com/@NUFC}" target="_blank">
+								<img th:src="@{images/newcastleYoutube.jpg}">
+							</a>
+						</div>
+						<div class="banner2">
+							<a th:href="@{https://www.instagram.com/nufc/}" target="_blank">
+								<img th:src="@{images/newcastleInsta.png}">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="center">
+				<div class="contents">
+					<div class="contentsHeader">
+						<span th:text="회원가입"></span>
+					</div>
+					<div class="contentsContents">
+						<form action="/register" method="post" class="joinForm">
+							<div class="agreement">
+								<div class="agreeText">
+									<p class="scrolltext">
+
+										[1] 툰 코리아의 성격<br>
+										◆ 툰 코리아는 뉴캐슬 유나이티드의 서포터들을 최우선으로 배려하는 커뮤니티입니다.<br>
+										◆ 하지만 툰 코리아는 어떤 팀의 팬도 즐겁게 이용할 수 있는 커뮤니티를 지향합니다.<br><br>
+										[2] 툰 코리아의 회원<br>
+										◆ 툰 코리아의 모든 회원은 사이트의 규약을 지킬 의무가 있습니다.<br>
+										◆ 툰 코리아의 모든 회원은 자유롭게 사이트를 이용하고 자신의 컨텐츠를 관리할 수 있지만, 규약에 위배되는 컨텐츠는 운영진에 의해 무통보 변경될
+										수 있으며 해당 회원에 대한 징계의 근거가 될 수 있습니다.<br>
+										◆ 툰 코리아의 모든 회원은 가입 시 본 규약을 읽고 숙지한 것으로 간주됩니다. 따라서 규약의 무지(無知)는 징계에 대한 항의의 근거가 될 수
+										없습니다.<br><br>
+										[2]-1 툰 코리아의 회원 구분<br>
+										최고운영자/관리그룹 : 툰 코리아의 운영에 대한 총괄적인 권한과 책임을 집니다.<br>
+										일반회원 : 툰 코리아의 일반 회원으로 사이트 내 게시판을 자유롭게 이용할 수 있습니다.<br>
+										징계회원 : 운영진에 의해 경고를 받은 회원으로 사이트 이용이 극히 제한됩니다.<br>
+										강퇴회원 : 운영진에 의해 강제 퇴장된 회원으로 사이트를 이용할 수 없습니다.<br><br>
+										[2]-2 툰 코리아의 운영진 명단<br>
+										최고운영자 : Admin<br>
+										관리그룹 : Tester <br><br>
+										[3] 툰 코리아의 징계<br>
+										◆ 툰 코리아 운영진은 규약에 위배되는 활동을 한 회원에게 징계를 가할 수 있습니다.<br>
+										◆ 툰 코리아의 징계는 무기한의 효력을 가지며 운영진이 인정한 특별한 경우에만 제한적으로 복권이 가능합니다.<br><br>
+										[3]-1 툰 코리아의 징계 구분<br>
+										주의 : 주의를 받은 회원은 차후 징계시 가중처벌됩니다.<br>
+										경고 : 경고를 받은 회원은 징계회원 그룹에 속하게 되고 사이트 이용이 제한됩니다.<br>
+										퇴장 : 퇴장을 당한 회원은 강퇴회원 그룹에 속하게 되고 사이트 이용이 금지당합니다.<br><br>
+										[3]-2 툰 코리아 금지사항<br>
+										- 뉴캐슬 유나이티드에 대한 비방 및 비아냥<br>
+										- 모든 형태의 욕설 (초성이나 *** 등 다른 문자로 바꾸어도 의미가 전달될 시 징계)<br>
+										- 특정인(선수)/팀/집단/국가/인종에 대한 악의(惡意)적 비방 및 비아냥<br>
+										- 타 회원들에게 불쾌감을 주는 저속한 표현 ('흑형', '엠백', 쫄깃하다' 등의 인종차별적 표현, '운지','홍어','일베충','댓글알바'
+										등의 정치적 표현 포함)<br>
+										- 기본적인 성의가 부족한 단문성 글<br>
+										- 운영진과 협의를 거치지 않은 홍보글 및 판매글<br>
+										- 기타 사이트의 미풍양속을 해친다고 판단되는 컨텐츠<br><br>
+										[4] 툰 코리아 기타 규약<br>
+										◆ 툰 코리아는 매달 3일에 회원가입신청을 허용합니다.<br>
+										◆ 툰 코리아는 타 사이트의 모든 컨텐츠에 대해 불펌을 허용하지 않습니다.<br><br>
+										◆ 본 규약의 허점을 애매하게 이용하는 회원은 징계를 받을 수 있습니다.<br><br>
+										본 규약은 상황에 따라 강경하게, 혹은 유연하게 적용될 수 있습니다. 모든 회원들은 본 규약을 엄수하여 주시길 바랍니다.
+									</p>
+								</div>
+							</div>
+
+							<label class="acceptAgree" for="acceptAgree">
+								<em>*</em>약관 모두 읽어야 체크 가능
+								<input type="checkbox" name="agreecheck" value="yes" id="acceptAgree">
+								약관을 모두 읽었으며 동의합니다.
+							</label>
+							<div class="inputJoin">
+								<em>*</em>
+								<label>아이디</label>
+								<div>
+									<input type="text" name="id" id="userId" oninput="checkIdLength()"
+										onkeyup="checkReg(event)" required>
+									<button type="button" onclick="checkId()">중복 체크</button> <span
+										id="idCheckIcon"></span>
+								</div>
+							</div>
+							<span id="idLengthMessage" style="color: red; margin-left: 135px; display: none;"></span>
+							<div class="inputJoin">
+								<em>*</em>
+								<label>비밀번호</label>
+								<div style="flex-direction: column;">
+									<input type="password" id="password1" name="password"
+										oninput="checkPasswordLength()" required />
+									<span id="passwordLengthMessage" style="color: red;"></span>
+								</div>
+							</div>
+							<div class="inputJoin">
+								<em>*</em>
+								<label>비밀번호 확인</label>
+								<div style="flex-direction: column;">
+									<input type="password" id="password2" name="password2"
+										oninput="checkPasswordMatch()" required>
+									<span id="passwordMismatch" style="color: red;"></span>
+								</div>
+							</div>
+							<div class="inputJoin">
+								<em>*</em>
+								<label>이메일</label>
+								<div>
+									<input type="email" name="email" id="emailInput" value="" required>
+									<button type="button" onclick="checkEmail()">이메일 인증</button> <span
+										id="emailCheckIcon"></span>
+								</div>
+							</div>
+							<div class="inputJoin" id="verificationSection" style="display: none;">
+								<em>*</em>
+								<label>인증 번호</label>
+								<div>
+									<input type="text" name="verificationCode" id="verificationCodeInput" required>
+									<button type="button" onclick="checkVerificationCode()">확인</button>
+								</div>
+							</div>
+							<div class="inputJoin">
+								<em>*</em>
+								<label>닉네임</label>
+								<div>
+									<input type="text" name="nickname" id="userNickname" oninput="checkNicknameLength()"
+										required>
+									<button type="button" onclick="checkNickname()">중복 체크</button><span
+										id="nicknameCheckIcon"></span>
+								</div>
+							</div>
+							<span id="nicknameLengthMessage"
+								style="color: red; margin-left: 135px; display: none;"></span>
+							<div class="inputJoin">
+								<em>*</em>
+								<label>생일</label>
+								<div class="datepicker">
+									<input type="text" id="userBirth" name="birth" placeholder="YYYYMMDD" value=""
+										readonly required>
+								</div>
+							</div>
+							<div class="inputJoin">
+								<em>*</em>
+								<label>비밀번호 찾기 질문/답변</label>
+								<div style="flex-direction: column;">
+									<select name="passQuestion">
+										<option>질문을 선택하세요</option>
+										<option value="1">내 보물 1호는?</option>
+										<option value="2">내가 졸업한 초등학교는?</option>
+										<option value="3">내가 좋아하는 가수는?</option>
+										<option value="4">내가 좋아하는 색깔은?</option>
+										<option value="5">내가 좋아하는 스포츠팀은?</option>
+									</select>
+									<input type="text" name="passAnswer" id="passAnswer" oninput="checkPassAnswerLength()" required>
+									<span id="passAnswerLengthMessage"
+										style="color: red; display: none;"></span>
+								</div>
+							</div>
+							<div class="buttonArea">
+								<input type="submit" value="등록" class="joinSubmit">
+								<button type="button" class="joinCancel" onclick="location.href='/main'">취소</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="right">
+				<div class="menu">
+					<div class="menuHeader">
+						<span th:text="메뉴"></span>
+					</div>
+					<div class="menuContents">
+						<ul>
+							<hr />
+							<li>
+								<a th:href="@{/notice}" class="">공지사항</a>
+							</li>
+							<hr />
+							<li>
+								<ul>컨텐츠
+									<li><a th:href="@{/news}" class="">뉴스</a></li>
+									<li><a th:href="@{/video}" class="">영상</a></li>
+								</ul>
+							</li>
+
+							<hr />
+							<li>
+								<ul>게시판
+									<li><a th:href="@{/board1}" class="">축구이야기</a></li>
+									<li><a th:href="@{/board2}" class="">사는이야기</a></li>
+									<li><a th:href="@{/matchday}" class="">매치데이</a></li>
+								</ul>
+							</li>
+							<hr />
+							<li>
+								<ul>정보
+									<li><a th:href="@{/profile}" class="">프로필</li>
+									<li><a th:href="@{/stadium}" class="">경기장</li>
+									<li><a th:href="@{/manager}" class="">감독</li>
+									<li><a th:href="@{/squad}" class="">스쿼드</li>
+								</ul>
+							</li>
+							<hr />
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<label class="copyRight">
+				<a th:href="@{/admin}" class="copy1">Admin Page</a>
+				<span> | </span>
+				<a th:href="@{/punish}" class="copy1">Punishiment Log</a>
+				<span> | </span>
+				<a th:href="@{/about}" class="copy1">About 툰코리아</a>
+				</br>
+				<span class="copy2">이 페이지는 개인프로젝트 페이지입니다</span>
+			</label>
+		</div>
+	</div>
+</body>
+<script>
+
+	//데이트피커
+	$("#userBirth").datepicker({
+		changeMonth: true, // 월 선택 가능
+		changeYear: true,  // 년도 선택 가능
+		hideIfNoPrevNext: false,
+		yearRange: "c-100:c+10", // -100부터 현재 년도까지 선택 가능
+		dateFormat: 'yymmdd',
+		monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+		monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+		dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+		dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+		dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+		showMonthAfterYear: true,
+		yearSuffix: '년'
+	});
+
+
+	$(document).ready(function () {
+		// acceptAgree 체크박스 비활성화
+		$("#acceptAgree").prop("disabled", true);
+
+		// 약관 스크롤이 다 내려갈 때 acceptAgree 체크박스 활성화
+		$(".agreement").scroll(function () {
+			var element = $(this)[0];
+
+			// 현재 스크롤 위치
+			var scrollTop = element.scrollTop;
+			// 스크롤 가능한 최대 높이
+			var scrollHeight = element.scrollHeight;
+			// 스크롤바의 현재 위치와 스크롤 가능한 최대 높이가 같을 때
+			if (scrollTop === scrollHeight - element.clientHeight) {
+				// acceptAgree 체크박스 활성화
+				$("#acceptAgree").prop("disabled", false);
+			}
+		});
+	});
+
+	//아이디 한글 방지 정규식
+	function checkReg(event) {
+		const regExp = /[^0-9a-zA-Z]/g; // 숫자와 영문자만 허용
+		//   const regExp = /[^ㄱ-ㅎ|가-힣]/g; // 한글만 허용
+		const del = event.target;
+		if (regExp.test(del.value)) {
+			del.value = del.value.replace(regExp, '');
+		}
+	};
+
+	// 아이디 길이 확인
+	function checkIdLength() {
+		var id = $("#userId").val();
+		var lengthMessage = document.getElementById("idLengthMessage");
+
+		if (id.length < 6 || id.length > 15) {
+			lengthMessage.innerHTML = "아이디는 영어와 숫자로 6글자 이상15글자 이하로 설정해야합니다.";
+			lengthMessage.style.display = "inline"; // 메시지를 표시합니다.
+		} else {
+			lengthMessage.innerHTML = "";
+			lengthMessage.style.display = "none"; // 메시지를 숨깁니다.
+		}
+	}
+
+
+	function checkId() {
+		var inputId = $("#userId").val();
+
+		// 아이디가 비어있는 경우 체크하지 않음
+		if (!inputId) {
+			alert("아이디를 입력하세요.");
+			return;
+		}
+
+		// 서버에 아이디 중복 체크 요청 보내기
+		$.ajax({
+			type: "GET",
+			url: "/checkIdAvailability", // 해당 URL은 실제로 존재하는 서버 엔드포인트여야 합니다.
+			data: {id: inputId},
+			success: function (response) {
+				console.log(response); // 추가된 부분
+
+				if (response === "available") {
+					alert("사용 가능한 아이디입니다.");
+					//중복체크 체크표시 출력
+					$("#idCheckIcon").html("✓");
+				} else if (response === "not available") {
+					alert("이미 사용 중인 아이디입니다. 다른 아이디를 입력하세요.");
+				} else {
+					alert("서버 응답에 오류가 있습니다.");
+				}
+			},
+			error: function () {
+				alert("서버 오류가 발생했습니다. 잠시 후 다시 시도하세요.");
+			},
+		});
+	}
+
+
+
+	// 패스워드 길이 확인
+	function checkPasswordLength() {
+		var password = $("#password1").val();
+		var lengthMessage = document.getElementById("passwordLengthMessage");
+
+		if (password.length < 6 || password.length > 20) {
+			lengthMessage.innerHTML = "비밀번호는 6글자 이상 20글자 이하로 설정해야합니다.";
+			lengthMessage.style.color = "red";
+		} else {
+			lengthMessage.innerHTML = "";
+		}
+	}
+
+	// 패스워드 일치 여부 확인
+	function checkPasswordMatch() {
+		var password = $("#password1").val();
+		var password2 = $("#password2").val();
+		var mismatchMessage = document.getElementById("passwordMismatch");
+
+		if (password !== password2) {
+			mismatchMessage.innerHTML = "비밀번호가 일치하지 않습니다.";
+			mismatchMessage.style.color = "red";
+		} else {
+			mismatchMessage.innerHTML = "비밀번호가 일치합니다.";
+			mismatchMessage.style.color = "green";
+		}
+	}
+
+	// 중복 체크 후 인증메일 보내기 
+	function checkEmail() {
+		var inputEmail = $("input[name='email']").val();
+
+		// 이메일이 비어있는 경우 체크하지 않음
+		if (!inputEmail) {
+			alert("이메일을 입력하세요.");
+			return;
+		}
+
+		// 서버에 이메일 중복 체크 요청 보내기
+		$.ajax({
+			type: "GET",
+			url: "/checkEmailAvailability", // 해당 URL은 실제로 존재하는 서버 엔드포인트여야 합니다.
+			data: {email: inputEmail},
+			success: function (response) {
+				console.log(response); // 추가된 부분
+
+				if (response === "available") {
+					alert('시용 가능한 이메일입니다. 메일이 전송중이니 알림을 기다려주세요.');
+
+					// AJAX 요청 보내기
+					$.ajax({
+						type: 'POST',
+						url: '/mail', // 서버의 mailController에 매핑된 엔드포인트
+						data: {email: inputEmail}, // 이메일 값을 전달
+						success: function (response) {
+							alert('이메일이 전송되었습니다. 인증 번호를 확인해주세요.');
+
+							// 인증 번호 입력 창과 확인 버튼을 나타나게 함
+							document.getElementById('verificationSection').style.display = 'flex';
+						},
+						error: function (error) {
+							alert('이메일 전송에 실패했습니다. 다시 시도해주세요.');
+						}
+					});
+				} else if (response === "not available") {
+					alert("이미 사용 중인 이메일입니다. 다른 이메일를 입력하세요.");
+				} else {
+					alert("서버 응답에 오류가 있습니다.");
+				}
+			},
+			error: function () {
+				alert("서버 오류가 발생했습니다. 잠시 후 다시 시도하세요.");
+			}
+		});
+	}
+
+
+	function checkVerificationCode() {
+		// 사용자가 입력한 인증번호 가져오기
+		var verificationCodeInput = $("#verificationCodeInput").val();
+
+		// AJAX 요청 보내기
+		$.ajax({
+			type: 'POST',
+			url: '/checkCode', // 실제 엔드포인트에 맞게 수정
+			data: {inputCode: verificationCodeInput},
+			success: function (response) {
+				if (response == "success") {
+					alert('인증이 성공했습니다.');
+					//중복체크 체크표시 출력
+					$("#emailCheckIcon").html("✓");
+					// 인증 번호 입력 부분 숨김
+					$("#verificationSection").hide();
+				} else {
+					alert('인증이 실패했습니다. 올바른 인증번호를 입력하세요.');
+				}
+			},
+			error: function (error) {
+				alert('인증번호 확인 중 오류가 발생했습니다. 다시 시도해주세요.');
+			}
+		});
+	}
+
+	// 넥네임 길이 확인
+	function checkNicknameLength() {
+		var Nickname = $("#userNickname").val();
+		var lengthMessage = document.getElementById("nicknameLengthMessage");
+
+		if (Nickname.length > 8) {
+			lengthMessage.innerHTML = "닉네임은 8글자 이하로 설정해야합니다.";
+			lengthMessage.style.display = "inline"; // 메시지를 표시합니다.
+		} else {
+			lengthMessage.innerHTML = "";
+			lengthMessage.style.display = "none"; // 메시지를 숨깁니다.
+		}
+	}
+
+	// 비밀번호 답변 길이 확인
+	function checkPassAnswerLength() {
+		var passAnswer = $("#passAnswer").val();
+		var lengthMessage = document.getElementById("passAnswerLengthMessage");
+
+		if (passAnswer.length > 8) {
+			lengthMessage.innerHTML = "답변은 8글자 이하로 설정해야합니다.";
+			lengthMessage.style.display = "inline"; // 메시지를 표시합니다.
+		} else {
+			lengthMessage.innerHTML = "";
+			lengthMessage.style.display = "none"; // 메시지를 숨깁니다.
+		}
+	}
+
+
+
+	function checkNickname() {
+		var inputNickname = $("input[name='nickname']").val();
+
+		// 아이디가 비어있는 경우 체크하지 않음
+		if (!inputNickname) {
+			alert("닉네임를 입력하세요.");
+			return;
+		}
+
+		// 서버에 아이디 중복 체크 요청 보내기
+		$.ajax({
+			type: "GET",
+			url: "/checkNicknameAvailability", // 해당 URL은 실제로 존재하는 서버 엔드포인트여야 합니다.
+			data: {nickname: inputNickname},
+			success: function (response) {
+				console.log(response); // 추가된 부분
+
+				if (response === "available") {
+					alert("사용 가능한 닉네임입니다.");
+					//닉네임 중복체크 체크출력
+					$("#nicknameCheckIcon").html("✓");
+				} else if (response === "not available") {
+					alert("이미 사용 중인 닉네임입니다. 다른 닉네임를 입력하세요.");
+				} else {
+					alert("서버 응답에 오류가 있습니다.");
+				}
+			},
+			error: function () {
+				alert("서버 오류가 발생했습니다. 잠시 후 다시 시도하세요.");
+			},
+		});
+	}
+
+	$(document).ready(function () {
+		$(".joinSubmit").click(function () {
+
+			// 약관 동의 체크 확인
+			var agreeChecked = $("#acceptAgree").prop("checked");
+
+			// 체크 여부에 따라 알림 표시
+			if (!agreeChecked) {
+				alert("약관에 동의해야 회원가입이 가능합니다.");
+				// 폼 제출 방지
+				return false;
+			}
+
+			// 아이디 중복 체크 아이콘이 추가되지 않은 경우 확인
+			if (!$("#idCheckIcon").html()) {
+				// 아이디 중복 체크 아이콘이 추가되지 않은 경우에는 알림 표시
+				alert('아이디 중복 체크를 수행해야 합니다.');
+				// 폼 제출 방지
+				return false;
+			}
+
+			// 아이디 중복 체크 아이콘이 추가되지 않은 경우 확인
+			if (!$("#idCheckIcon").html()) {
+				// 아이디 중복 체크 아이콘이 추가되지 않은 경우에는 알림 표시
+				alert('아이디 중복 체크를 수행해야 합니다.');
+				// 폼 제출 방지
+				return false;
+			}
+
+			// 이메일 체크 아이콘이 추가되지 않은 경우 확인
+			if (!$("#emailCheckIcon").html()) {
+				// 이메일 체크 아이콘이 추가되지 않은 경우에는 알림 표시
+				alert('이메일 인증 체크를 수행해야 합니다.');
+				// 폼 제출 방지
+				return false;
+			}
+
+			// 닉네임 중복 체크 아이콘이 추가되지 않은 경우 확인
+			if (!$("#nicknameCheckIcon").html()) {
+				// 닉네임 중복 체크 아이콘이 추가되지 않은 경우에는 알림 표시
+				alert('닉네임 중복 체크를 수행해야 합니다.');
+				// 폼 제출 방지
+				return false;
+			}
+
+			// datepicker가 선택되지 않은 경우 확인
+			if ($("#userBirth").val() == "") {
+				// datepicker가 선택되지 않은 경우에는 알림 표시
+				alert('생년월일을 선택해야 합니다.');
+				// 폼 제출 방지
+				return false;
+			}
+		});
+	});
+
+
+
+</script>
+
+</html>

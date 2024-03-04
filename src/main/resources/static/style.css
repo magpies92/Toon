@@ -1,0 +1,825 @@
+body {
+	max-width: 1300px;
+	margin: 5px auto;
+}
+
+
+.toon {
+	background: #ffffff;
+	width: 1210px;
+	height: auto;
+	overflow: hidden;
+	margin: auto;
+	max-width: 1250px;
+}
+
+
+.toon,
+.toon * {
+	box-sizing: border-box;
+	font-size: 15px;
+	position: relative;
+
+}
+
+
+.toon tr {
+	border-bottom: 1px dashed darkgrey;
+	display: flex;
+	gap: 20px;
+	margin-bottom: 5px;
+	height: auto;
+
+}
+
+.theadStyle {
+	border: none;
+}
+
+.mainTrNewsTitle {
+	width: 565px;
+}
+
+.mainTrNoticeTitle {
+	width: 190px;
+}
+
+.mainTrBoard1Title {
+	width: 195px;
+}
+
+.mainTrBoard2Title {
+	width: 195px;
+}
+
+.listTrNoticeTitle {
+	width: 435px;
+}
+
+hr {
+	border: solid;
+	width: 200px;
+	border-width: thin;
+	border-color: darkgrey;
+}
+
+a {
+	color: black;
+	/* 모든 링크의 텍스트 색상을 변경 */
+	text-decoration: none;
+}
+
+a:visited {
+	color: black;
+	/* 방문한 링크의 텍스트 색상을 변경 */
+	text-decoration: none;
+}
+
+a:hover {
+	color: purple;
+	text-decoration: underline;
+}
+
+em {
+	color: red;
+	padding-top: 6px;
+}
+
+ul {
+	padding: 0;
+	margin: 0;
+}
+
+
+
+.header {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 1210px;
+	height: 190px;
+	overflow: hidden;
+	display: flex;
+}
+
+.headerLogo {
+	width: 190px;
+	height: 190px;
+	overflow: hidden;
+	object-fit: scale-down;
+}
+
+.headerSubject {
+	width: 1023px;
+	height: auto;
+	overflow: hidden;
+	border-left: solid;
+	border-width: thin;
+}
+
+.headerTitle {
+	width: 310px;
+	position: relative;
+	top: 40%;
+	left: 27%
+}
+
+.headerBg {
+	width: 195px;
+	height: 195px;
+	float: right;
+	transform: rotate(10deg) scale(2.3);
+}
+
+.mainFrame {
+	width: 1210px;
+	height: auto;
+	left: 345px;
+	top: 0px;
+	overflow: hidden;
+	position: static;
+	display: flex;
+	flex-direction: row;
+}
+
+.left {
+	display: flex;
+	flex-direction: column;
+	margin: 10px 0 0 0;
+	gap: 25px;
+}
+
+.login {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 220px;
+	height: 150px;
+	overflow: hidden;
+}
+
+.loginHeader {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: auto;
+	height: auto;
+	margin: 3px;
+}
+
+.loginContents {
+	background: #ffffff;
+	padding: 20px 11px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: auto;
+	height: auto;
+	overflow: hidden;
+}
+
+.loginBox {
+	display: flex;
+
+}
+
+.id {
+	background: #ffffff;
+	border-style: solid;
+	border-color: #000000;
+	border-width: 1px;
+	border-radius: 3px;
+	padding: 5px;
+	display: flex;
+	flex-direction: row;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	flex-shrink: 0;
+	width: 130px;
+	height: 22px;
+	position: relative;
+	overflow: hidden;
+	margin: 0.3px;
+}
+
+#userInfo {
+	margin: 3px;
+}
+
+.pass {
+	border-style: solid;
+	border-color: #000000;
+	border-width: 1px;
+	border-radius: 3px;
+	padding: 5px;
+	display: flex;
+	flex-direction: row;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	flex-shrink: 0;
+	width: 130px;
+	height: 22px;
+	position: relative;
+	overflow: hidden;
+	margin: 0.3px;
+}
+
+.buttonLogin {
+	background: #ffffff;
+	border-style: solid;
+	border-color: #000000;
+	border-width: 1px;
+	border-radius: 3px;
+	width: 65px;
+	height: auto;
+	overflow: hidden;
+	font-size: 13px;
+
+}
+
+.buttonLogout {
+	margin-top: -22px;
+	margin-left: 135px;
+	display: flex;
+	width: auto;
+}
+
+.memorize {
+	width: 175px;
+	height: auto;
+	position: relative;
+	overflow: hidden;
+}
+
+.loginEtc {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+#customCheck {
+	width: 15px;
+	height: 15px;
+	position: relative;
+	top: 1.5px;
+}
+
+.loginCheck {
+	font-size: small;
+}
+
+.buttonJoin {
+	overflow: hidden;
+	font-size: small;
+}
+
+.searchIdpw {
+	overflow: hidden;
+	font-size: small;
+}
+
+.notice {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: auto;
+	height: 187px;
+	overflow: hidden;
+}
+
+.noticeHeader {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: auto;
+	height: auto;
+	margin: 3px;
+}
+
+.noticeContents {
+	background: #ffffff;
+	padding: 5px 11px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: auto;
+	height: auto;
+	overflow: hidden;
+}
+
+.banner {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 220px;
+	height: 187px;
+	overflow: hidden;
+}
+
+.bannerHeader {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: 198px;
+	height: 16.5px;
+	margin: 3px;
+}
+
+
+.bannerContents {
+	background: #ffffff;
+	padding: 11px 11px;
+	display: flex;
+	flex-direction: column;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: 210px;
+	height: 150px;
+	overflow: hidden;
+	margin-left: 4px;
+}
+
+.banner1 img {
+	width: 100%;
+	height: 100%;
+}
+
+.banner2 img {
+	width: 100%;
+	height: 100%;
+}
+
+.center {
+	display: flex;
+	flex-direction: column;
+	margin: 10px 20px 0 20px;
+}
+
+.news {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 720.5px;
+	height: 260.7px;
+	overflow: hidden;
+}
+
+.newsHeader {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: auto;
+	height: 16.5px;
+	margin: 3px;
+}
+
+.newsContents {
+	background: #ffffff;
+	padding: 11px;
+	display: flex;
+	flex-direction: row;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: 693px;
+	height: 220px;
+	overflow: hidden;
+	margin-left: 15px;
+}
+
+.board {
+	width: auto;
+	height: auto;
+	display: flex;
+	gap: 17px;
+	margin: 20px 0 0 0;
+}
+
+.board1 {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 352px;
+	height: 293.6px;
+	overflow: hidden;
+}
+
+.board1Header {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: auto;
+	height: 16.5px;
+	margin: 3px;
+}
+
+.board1Contents {
+	background: #ffffff;
+	padding: 11px;
+	display: flex;
+	flex-direction: row;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: 330px;
+	height: 290px;
+	overflow: hidden;
+	margin-left: 15px;
+}
+
+.board2 {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 352px;
+	height: 293.6px;
+	overflow: hidden;
+}
+
+.board2Header {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: auto;
+	height: 16.5px;
+	margin: 3px;
+}
+
+.board2Contents {
+	background: #ffffff;
+	padding: 11px;
+	display: flex;
+	flex-direction: row;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: 330px;
+	height: 290px;
+	overflow: hidden;
+	margin-left: 15px;
+}
+
+.contents {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 720.5px;
+	height: auto;
+	overflow: hidden;
+}
+
+.contentsHeader {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: auto;
+	height: auto;
+	margin: 3px 3px 5px 12px;
+
+}
+
+.contentsContents {
+	background: #ffffff;
+	padding: 11px;
+	display: flex;
+	flex-direction: column;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: 693px;
+	height: auto;
+	margin: 0px 12px 10px 12px;
+	overflow: hidden;
+}
+
+.right {
+	margin: 10px 0 0 0;
+}
+
+.menu {
+	border-radius: 2.2px;
+	border-style: solid;
+	border-width: 1.1px;
+	width: 228.8px;
+	height: 574px;
+	overflow: hidden;
+}
+
+
+.menuHeader {
+	text-align: left;
+	font-family: "Inter-Regular", sans-serif;
+	font-size: 13.200000762939453px;
+	font-weight: 400;
+	width: 198px;
+	height: 16.5px;
+	margin: 3px;
+}
+
+.menuContents {
+	background: #ffffff;
+	padding: 11px;
+	display: flex;
+	flex-direction: column;
+	gap: 11px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: 205px;
+	height: 570px;
+	overflow: hidden;
+}
+
+.menuContents li {
+	margin: 10px;
+	list-style: none;
+}
+
+.footer {
+	margin: 10px 400px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.copy1 {
+	margin: 5px;
+}
+
+.more {
+	float: right;
+}
+
+.joinForm div {
+	margin: 5px
+}
+
+.joinForm span {
+	font-size: 11px;
+}
+
+.inputJoin {
+	display: flex;
+	flex-direction: row;
+}
+
+.inputJoin label {
+	width: 110px;
+	padding-top: 6px;
+}
+
+.inputJoin input {
+	width: 230px;
+}
+
+.datepicker {
+	display: flex !important;
+	flex-direction: row !important;
+}
+
+.inputJoin div {
+	display: flex;
+	gap: 5px;
+}
+
+.joinForm {
+	margin-left: 110px;
+}
+
+.ui-widget.ui-widget-content {
+	/* 전체 박스 */
+	border: 0px;
+	box-shadow: 5px 5px 10px #ccc;
+	padding: 0;
+	background: lightgrey;
+
+}
+
+.ui-widget-header {
+	/* 헤더 (화살표/날짜표시 영역) */
+	background: grey;
+	border: 0px;
+	border-radius: 0px;
+}
+
+.ui-widget-header a {
+	display: none;
+}
+
+.ui-datepicker-prev {
+	/* 이전 화살표 */
+	text-align: center;
+	line-height: 2em;
+}
+
+.ui-datepicker-prev::before {
+	font: var(--fa-font-solid);
+	content: '\f0d9';
+	color: #fff;
+}
+
+.ui-datepicker-next {
+	/* 다음 화살표 */
+	text-align: center;
+	line-height: 2em;
+}
+
+/*font-awesome 이용해서 화살표 변경*/
+.ui-datepicker-next::before {
+	font: var(--fa-font-solid);
+	content: '\f0da';
+	color: #fff;
+}
+
+.ui-datepicker .ui-datepicker-title {
+	/* 년월 텍스트 묶음 */
+	color: #fff;
+	margin-left: 53px;
+	height: 25px;
+}
+
+.ui-datepicker .ui-datepicker-title .ui-datepicker-year {
+	/* 년도 숫자만 */
+	color: black;
+}
+
+.ui-datepicker .ui-datepicker-title .ui-datepicker-month {
+	/* *월 */
+	color: black;
+}
+
+.ui-datepicker th {
+	/* 요일 영역 */
+	background: grey;
+}
+
+.ui-datepicker th span {
+	/* 요일 텍스트 */
+	font-size: 18px;
+	color: #fff;
+}
+
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default,
+.ui-button,
+html .ui-button.ui-state-disabled:hover,
+html .ui-button.ui-state-disabled:active {
+	/* 일자 기본영역 */
+	border: 0px;
+	background: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	line-height: 24px;
+	border-radius: 100%;
+	padding: 0;
+	margin: 0 auto;
+}
+
+
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active,
+a.ui-button:active,
+.ui-button:active,
+.ui-button.ui-state-active:hover {
+	/* 선택 일자 */
+	background: white;
+	color: #000;
+}
+
+.ui-datepicker-calendar {
+	width: 230px;
+}
+
+.ui-datepicker-calendar tbody {
+	background: darkgray;
+}
+
+.buttonArea {
+	padding-top: 10px;
+	width: 100%;
+
+}
+
+#idCheckIcon {
+	font-size: 15px;
+	color: green;
+}
+
+#nicknameCheckIcon {
+	font-size: 15px;
+	color: green;
+}
+
+#emailCheckIcon {
+	font-size: 15px;
+	color: green;
+}
+
+.joinSubmit {
+	float: right;
+	margin-right: 13px;
+}
+
+.joinCancel {
+	float: left;
+}
+
+.agreement {
+	max-height: 300px;
+	/* 원하는 높이 설정 */
+	max-width: 479px;
+	overflow-y: auto;
+	/* 스크롤 가능하도록 설정 */
+}
+
+.acceptAgree {
+	margin-left: 5px
+}
+
+.searchBox {
+	display: flex;
+	gap: 10px;
+
+}
+
+
+.reply {
+
+	border: solid 1px;
+	border-radius: 10px;
+	border-color: darkgray;
+	margin: 40px 10px;
+
+}
+
+.insertComment {
+	margin-left: 612px;
+}
+
+#commentTable {
+	margin: 5px;
+
+}
+
+.commentTr {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.buttons {
+	float: right;
+	display: flex;
+	margin-right: 17px;
+}
+
+.boardFrame {
+	margin: 20px;
+}
+
+.TitleAndDate {
+	background: dimgrey;
+	border: 1px solid darkgray;
+	border-radius: 4px;
+	color: white;
+	line-height: 30px;
+	padding-left: 10px;
+}
+
+.PostId {
+	display: none;
+}
+
+.NicknameAndView {
+	margin: 10px 0px;
+}
+
+.boardFrameViewCount {
+	float: right;
+	display: flex;
+}
+
+.FrameDate {
+	float: right;
+	margin-right: 10px;
+	font-size: small;
+}
+
+/* 수정된 댓글 입력 필드 스타일 */
+.edit-comment-input {
+	height: 50px;
+}

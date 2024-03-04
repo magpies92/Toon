@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" th:href="@{/vars.css}" />
+	<link rel="stylesheet" th:href="@{/style.css}" />
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<title>툰 코리아</title>
+</head>
+
+<body>
+	<div class="toon">
+		<div class="header">
+			<a th:href="@{/main}" class="headerLogo">
+				<img th:src="@{/images/logo1.png}">
+			</a>
+			<div class="headerSubject">
+				<div class="headerTitle">대한민국 모든 툰 아미들의 외침 툰 코리아</div>
+				<img th:src="@{/images/headerBg.jpg}" class="headerBg">
+			</div>
+		</div>
+		<div class="mainFrame">
+			<div class="left">
+				<div class="login">
+					<div class="loginHeader">
+						<span th:text="로그인"></span><br />
+					</div>
+					<form action="/login" id="loginForm" class="loginContents" method="post"
+						th:if="${session.userId == null}">
+						<div class="loginBox">
+							<div class="idPw">
+								<input type="text" class="id" name="id" placeholder="Id" />
+								<input type="password" class="pass" name="pass" placeholder="Password" />
+							</div>
+							<input type="submit" value="로그인" class="buttonLogin" />
+						</div>
+						<div class="loginEtc">
+							<a th:href="@{/join}" class="buttonJoin">회원가입</a>
+							<a th:href="@{/idpwSearch}" class="searchIdpw">ID/PW 찾기</a>
+						</div>
+					</form>
+					<div th:if="${session.userId != null}" id="userInfo">
+						<div th:each="user : ${userList}">
+							<div th:if="${session.userId eq user.id}">
+								<div th:text="${user.nickname + '님'}" id="userNickname"></div>
+								<button onclick="logOut()" class="buttonLogout">로그아웃</button>
+								<div th:text="'레벨: ' + ${user.userLevel}" id="userLevel"></div>
+								<div th:text="'포인트: ' + ${user.userPoint}" id="userPoint"></div>
+								<div th:text="${user.userAuthority}" id="userAuthority"></div>
+								<a th:href="@{/mypage}">내 정보로 이동</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="notice">
+					<div class="noticeHeader">
+						<span th:text="공지사항"></span>
+						<a th:href="@{/notice}" class="more">더보기</a>
+						<br />
+					</div>
+					<div class="noticeContents">
+						<table>
+							<tbody>
+								<tr th:each="notice : ${noticeList}">
+									<td th:text="${notice.noticeId}" style="display: none;"></td>
+									<td class=mainTrNoticeTitle>
+										<span>-</span>
+										<a th:href="@{'/notice/' + ${notice.noticeId}}"
+											th:text="${#strings.length(notice.title) &gt; 12 ? #strings.substring(notice.title, 0, 12) + '...' : notice.title}"></a>
+									</td>
+									<td th:text="${notice.nickname}" style="display: none;"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="banner">
+					<div class="bannerHeader">
+						<span th:text="배너"></span>
+					</div>
+					<div class="bannerContents">
+						<div class="banner1">
+							<a th:href="@{https://www.youtube.com/@NUFC}" target="_blank">
+								<img th:src="@{/images/newcastleYoutube.jpg}">
+							</a>
+						</div>
+						<div class="banner2">
+							<a th:href="@{https://www.instagram.com/nufc/}" target="_blank">
+								<img th:src="@{/images/newcastleInsta.png}">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="center">
+				<div class="contents">
+					<!--board1-->
+					<div th:if="${boardType == 'board1' && board1Page != null}">
+						<div class="contentsHeader">
+							<span th:text="축구이야기"></span>
+						</div>
+						<div class="boardFrame">
+							<div class="TitleAndDate">
+								<div th:utext="${#temporals.format(date, 'yyyy-MM-dd')}" class="FrameDate"></div>
+								<div th:utext="${title}" style="width: 580px;"></div>
+							</div>
+							<div class="PostId">
+								번호:<div th:utext="${board1Id}"></div>
+							</div>
+							<div class="NicknameAndView">
+								<div class="boardFrameViewCount">조회수:<div th:utext="${viewCount}"></div>
+								</div>
+								<div th:utext="${nickname}"></div>
+							</div>
+							<hr style="width: 100%;">
+							<div>
+								<div th:utext="${contents}" class="boardFrameContents"></div>
+							</div>
+						</div>
+						<hr style="width: 95%;">
+						<div class="buttons">
+							<form th:action="@{/post/update}" method="post" th:if="${session.userNickname == nickname}">
+								<input type="hidden" name="boardType" th:value="'board1'" />
+								<input type="hidden" name="postId" th:value="${board1Id}" />
+								<button type="submit">수정</button>
+							</form>
+							<form th:action="@{/post/delete}" method="post"
+								th:if="${session.userNickname == nickname or session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+								<input type="hidden" name="boardId" th:value="'board1'" />
+								<input type="hidden" name="postId" th:value="${board1Id}" />
+								<button type="submit">삭제</button>
+							</form>
+							<button onclick="window.location.href='/board1'">목록</button>
+						</div>
+						<div class="reply">
+							<span style="margin: 10px;">댓글</span>
+							<table id="commentTable" class="table" style="border-top:1px dashed darkgrey ">
+								<tbody>
+									<!-- 각 댓글에 대한 반복문 -->
+									<tr th:each="comment : ${comments}" class="commentTr"
+										style="gap:0px; width:680px !important;">
+
+										<td th:utext="${comment.commentId}" style="display: none;"></td>
+										<td th:utext="${comment.nickname}" style="width: 130px; margin-left: 10px;">
+										</td>
+										<td style="position: relative; left: 150px;bottom: 23px;"
+											th:utext="${comment.date != null ? #temporals.format(comment.date, 'yyyy-MM-dd') : ''}">
+										</td>
+										<!-- 수정 및 삭제 버튼 -->
+										<td style="position: relative; left: 260px; bottom: 47px;">
+											<button onclick="editComment(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">수정</button>
+											<button onclick="deleteRow(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">삭제</button>
+										</td>
+										<td style="position: relative; left: 10px; bottom: 25px;">
+											<span id="commentContents-${comment.commentId}"
+												th:utext="${comment.contents}"></span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="comment">
+								<textarea id="commentContents" style="width: 97%; height: 80px; margin:10px"></textarea>
+								<th:block th:if="${session.userId != null}">
+									<button class="insertComment" onclick="insertComment()"
+										th:if="${session.userAuthority != '징계중'}">댓글 등록</button>
+								</th:block>
+							</div>
+						</div>
+						<table style="margin: auto;">
+							<thead>
+								<tr>
+									<th style="width: 50px;">번호</th>
+									<th style="width: 360px;">제목</th>
+									<th style="width: 110px;">글쓴이</th>
+									<th style="width: 160px;">날짜</th>
+								</tr>
+							</thead>
+							<tbody id="listTable">
+								<tr th:each="board1 : ${board1Page.content}" th:with="postId=${board1.board1Id}">
+									<td style="width: 50px; text-align: center;" th:text="${board1.board1Id}">
+									</td>
+									<td style="width: 350px; text-align: left;">
+										<a th:href="@{'/board1/' + ${board1.board1Id}}"
+											th:text="${#strings.length(board1.title) &gt; 23 ? #strings.substring(board1.title, 0, 23) + '...' : board1.title}"></a>
+										<span th:if="${commentCounts.containsKey(board1.board1Id)}"
+											th:text="${'[' + commentCounts.get(board1.board1Id) + ']'}"></span>
+									</td>
+									<td style="width: 130px; text-align: center;" th:text="${board1.nickname}">
+									</td>
+									<td style="width: 140px; text-align: center;"
+										th:text="${board1.date != null ? #temporals.format(board1.date, 'yyyy-MM-dd') : ''}">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pagination">
+							<ul style="display: flex; gap: 15px; justify-content: center; list-style-type: none;">
+								<li th:if="${board1Page.hasPrevious()}">
+									<a th:href="@{/board1(page=0)}">첫 페이지</a>
+								</li>
+								<li th:if="${board1Page.hasPrevious()}">
+									<a th:href="@{/board1(page=${board1Page.getNumber() - 1})}" aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+								</li>
+								<li th:each="i : ${#numbers.sequence(0, board1Page.getTotalPages() - 1)}"
+									th:class="${board1Page.number == i} ? 'active'">
+									<a th:href="@{/board1(page=${i})}" th:text="${i + 1}"></a>
+								</li>
+								<li th:if="${board1Page.hasNext()}">
+									<a th:href="@{/board1(page=${board1Page.getNumber() + 1})}" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								</li>
+								<li th:if="${board1Page.hasNext()}">
+									<a th:href="@{/board1(page=${board1Page.getTotalPages() - 1})}">마지막 페이지</a>
+								</li>
+							</ul>
+						</div>
+						<div class="contentsButton">
+							<th:block th:if="${session.userId != null}">
+								<form action="/write" method="get" style="float: right;"
+									th:if="${session.userAuthority != '징계중'}">
+									<input type="hidden" name="boardId" value="board1" />
+									<button type="submit">게시글 작성</button>
+								</form>
+							</th:block>
+							<div class="searchBox">
+								<button onclick="toggleSearch()">검색</button>
+								<div id="searchInput" style="display: none;">
+									<select id="category">
+										<option value="title">제목</option>
+										<option value="contents">내용</option>
+										<option value="nickname">닉네임</option>
+									</select>
+									<input type="text" id="searchKeyword" placeholder="검색어를 입력하세요">
+									<button onclick="search()">검색</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--board2 -->
+					<div th:if="${boardType == 'board2' && board2Page != null}">
+						<div class="contentsHeader">
+							<span th:text="사는이야기"></span>
+						</div>
+						<div class="boardFrame">
+							<div class="TitleAndDate">
+								<div th:utext="${#temporals.format(date, 'yyyy-MM-dd')}" class="FrameDate"></div>
+								<div th:utext="${title}" style="width: 580px;"></div>
+							</div>
+							<div class="PostId">
+								번호:<div th:utext="${board2Id}"></div>
+							</div>
+							<div class="NicknameAndView">
+								<div class="boardFrameViewCount">조회수:<div th:utext="${viewCount}"></div>
+								</div>
+								<div th:utext="${nickname}"></div>
+							</div>
+							<hr style="width: 100%;">
+							<div>
+								<div th:utext="${contents}" class="boardFrameContents"></div>
+							</div>
+						</div>
+						<hr style="width: 95%;">
+						<div class="buttons">
+							<form th:action="@{/post/update}" method="post" th:if="${session.userNickname == nickname}">
+								<input type="hidden" name="boardType" th:value="'board2'" />
+								<input type="hidden" name="postId" th:value="${board2Id}" />
+								<button type="submit">수정</button>
+							</form>
+							<form th:action="@{/post/delete}" method="post"
+								th:if="${session.userNickname == nickname or session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+								<input type="hidden" name="boardId" th:value="'board2'" />
+								<input type="hidden" name="postId" th:value="${board2Id}" />
+								<button type="submit">삭제</button>
+							</form>
+							<button onclick="window.location.href='/board2'">목록</button>
+						</div>
+						<div class="reply">
+							<span style="margin: 10px;">댓글</span>
+							<table id="commentTable" class="table" style="border-top:1px dashed darkgrey ">
+								<tbody>
+									<!-- 각 댓글에 대한 반복문 -->
+									<tr th:each="comment : ${comments}" class="commentTr"
+										style="gap:0px; width:680px !important;">
+
+										<td th:utext="${comment.commentId}" style="display: none;"></td>
+										<td th:utext="${comment.nickname}" style="width: 130px; margin-left: 10px;">
+										</td>
+										<td style="position: relative; left: 150px;bottom: 23px;"
+											th:utext="${comment.date != null ? #temporals.format(comment.date, 'yyyy-MM-dd') : ''}">
+										</td>
+										<!-- 수정 및 삭제 버튼 -->
+										<td style="position: relative; left: 260px; bottom: 47px;">
+											<button onclick="editComment(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">수정</button>
+											<button onclick="deleteRow(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">삭제</button>
+										</td>
+										<td style="position: relative; left: 10px; bottom: 25px;">
+											<span id="commentContents-${comment.commentId}"
+												th:utext="${comment.contents}"></span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="comment">
+								<textarea id="commentContents" style="width: 97%; height: 80px; margin:10px"></textarea>
+								<th:block th:if="${session.userId != null}">
+									<button class="insertComment" onclick="insertComment()"
+										th:if="${session.userAuthority != '징계중'}">댓글 등록</button>
+								</th:block>
+							</div>
+						</div>
+						<table style="margin: auto;">
+							<thead>
+								<tr>
+									<th style="width: 50px;">번호</th>
+									<th style="width: 360px;">제목</th>
+									<th style="width: 110px;">글쓴이</th>
+									<th style="width: 160px;">날짜</th>
+								</tr>
+							</thead>
+							<tbody id="listTable">
+								<tr th:each="board2 : ${board2Page.content}" th:with="postId=${board2.board2Id}">
+									<td style="width: 50px; text-align: center;" th:text="${board2.board2Id}">
+									</td>
+									<td style="width: 350px; text-align: left;">
+										<a th:href="@{'/board2/' + ${board2.board2Id}}"
+											th:text="${#strings.length(board2.title) &gt; 23 ? #strings.substring(board2.title, 0, 23) + '...' : board2.title}"></a>
+										<span th:if="${commentCounts.containsKey(board2.board2Id)}"
+											th:text="${'[' + commentCounts.get(board2.board2Id) + ']'}"></span>
+									</td>
+									<td style="width: 130px; text-align: center;" th:text="${board2.nickname}">
+									</td>
+									<td style="width: 140px; text-align: center;"
+										th:text="${board2.date != null ? #temporals.format(board2.date, 'yyyy-MM-dd') : ''}">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pagination">
+							<ul style="display: flex; gap: 15px; justify-content: center; list-style-type: none;">
+								<li th:if="${board2Page.hasPrevious()}">
+									<a th:href="@{/board2(page=0)}">첫 페이지</a>
+								</li>
+								<li th:if="${board2Page.hasPrevious()}">
+									<a th:href="@{/board2(page=${board2Page.getNumber() - 1})}" aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+								</li>
+								<li th:each="i : ${#numbers.sequence(0, board2Page.getTotalPages() - 1)}"
+									th:class="${board2Page.number == i} ? 'active'">
+									<a th:href="@{/board2(page=${i})}" th:text="${i + 1}"></a>
+								</li>
+								<li th:if="${board2Page.hasNext()}">
+									<a th:href="@{/board2(page=${board2Page.getNumber() + 1})}" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								</li>
+								<li th:if="${board2Page.hasNext()}">
+									<a th:href="@{/board2(page=${board2Page.getTotalPages() - 1})}">마지막 페이지</a>
+								</li>
+							</ul>
+						</div>
+						<div class="contentsButton">
+							<th:block th:if="${session.userId != null}">
+								<form action="/write" method="get" style="float: right;"
+									th:if="${session.userAuthority != '징계중'}">
+									<input type="hidden" name="boardId" value="board2" />
+									<button type="submit">게시글 작성</button>
+								</form>
+							</th:block>
+							<div class="searchBox">
+								<button onclick="toggleSearch()">검색</button>
+								<div id="searchInput" style="display: none;">
+									<select id="category">
+										<option value="title">제목</option>
+										<option value="contents">내용</option>
+										<option value="nickname">닉네임</option>
+									</select>
+									<input type="text" id="searchKeyword" placeholder="검색어를 입력하세요">
+									<button onclick="search()">검색</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--news -->
+					<div th:if="${boardType == 'news' && newsPage != null}">
+						<div class="contentsHeader">
+							<span th:text="뉴스"></span>
+						</div>
+						<div class="boardFrame">
+							<div class="TitleAndDate">
+								<div th:utext="${#temporals.format(date, 'yyyy-MM-dd')}" class="FrameDate"></div>
+								<div th:utext="${title}" style="width: 580px;"></div>
+							</div>
+							<div class="PostId">
+								번호:<div th:utext="${newsId}"></div>
+							</div>
+							<div class="NicknameAndView">
+								<div class="boardFrameViewCount">조회수:<div th:utext="${viewCount}"></div>
+								</div>
+								<div th:utext="${nickname}"></div>
+							</div>
+							<hr style="width: 100%;">
+							<div>
+								<div th:utext="${contents}" class="boardFrameContents"></div>
+							</div>
+						</div>
+						<hr style="width: 95%;">
+						<div class="buttons">
+							<form th:action="@{/post/update}" method="post" th:if="${session.userNickname == nickname}">
+								<input type="hidden" name="boardType" th:value="'news'" />
+								<input type="hidden" name="postId" th:value="${newsId}" />
+								<button type="submit">수정</button>
+							</form>
+							<form th:action="@{/post/delete}" method="post"
+								th:if="${session.userNickname == nickname or session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+								<input type="hidden" name="boardId" th:value="'news'" />
+								<input type="hidden" name="postId" th:value="${newsId}" />
+								<button type="submit">삭제</button>
+							</form>
+							<button onclick="window.location.href='/news'">목록</button>
+						</div>
+						<div class="reply">
+							<span style="margin: 10px;">댓글</span>
+							<table id="commentTable" class="table" style="border-top:1px dashed darkgrey ">
+								<tbody>
+									<!-- 각 댓글에 대한 반복문 -->
+									<tr th:each="comment : ${comments}" class="commentTr"
+										style="gap:0px; width:680px !important;">
+
+										<td th:utext="${comment.commentId}" style="display: none;"></td>
+										<td th:utext="${comment.nickname}" style="width: 130px; margin-left: 10px;">
+										</td>
+										<td style="position: relative; left: 150px;bottom: 23px;"
+											th:utext="${comment.date != null ? #temporals.format(comment.date, 'yyyy-MM-dd') : ''}">
+										</td>
+										<!-- 수정 및 삭제 버튼 -->
+										<td style="position: relative; left: 260px; bottom: 47px;">
+											<button onclick="editComment(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">수정</button>
+											<button onclick="deleteRow(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">삭제</button>
+										</td>
+										<td style="position: relative; left: 10px; bottom: 25px;">
+											<span id="commentContents-${comment.commentId}"
+												th:utext="${comment.contents}"></span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="comment">
+								<textarea id="commentContents" style="width: 97%; height: 80px; margin:10px"></textarea>
+								<th:block th:if="${session.userId != null}">
+									<button class="insertComment" onclick="insertComment()"
+										th:if="${session.userAuthority != '징계중'}">댓글 등록</button>
+								</th:block>
+							</div>
+						</div>
+						<table style="margin: auto;">
+							<thead>
+								<tr>
+									<th style="width: 50px;">번호</th>
+									<th style="width: 360px;">제목</th>
+									<th style="width: 110px;">글쓴이</th>
+									<th style="width: 160px;">날짜</th>
+								</tr>
+							</thead>
+							<tbody id="listTable">
+								<tr th:each="news : ${newsPage.content}" th:with="postId=${news.newsId}">
+									<td style="width: 50px; text-align: center;" th:text="${news.newsId}">
+									</td>
+									<td style="width: 350px; text-align: left;">
+										<a th:href="@{'/news/' + ${news.newsId}}"
+											th:text="${#strings.length(news.title) &gt; 23 ? #strings.substring(news.title, 0, 23) + '...' : news.title}"></a>
+										<span th:if="${commentCounts.containsKey(news.newsId)}"
+											th:text="${'[' + commentCounts.get(news.newsId) + ']'}"></span>
+									</td>
+									<td style="width: 130px; text-align: center;" th:text="${news.nickname}">
+									</td>
+									<td style="width: 140px; text-align: center;"
+										th:text="${news.date != null ? #temporals.format(news.date, 'yyyy-MM-dd') : ''}">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pagination">
+							<ul style="display: flex; gap: 15px; justify-content: center; list-style-type: none;">
+								<li th:if="${newsPage.hasPrevious()}">
+									<a th:href="@{/news(page=0)}">첫 페이지</a>
+								</li>
+								<li th:if="${newsPage.hasPrevious()}">
+									<a th:href="@{/news(page=${newsPage.getNumber() - 1})}" aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+								</li>
+								<li th:each="i : ${#numbers.sequence(0, newsPage.getTotalPages() - 1)}"
+									th:class="${newsPage.number == i} ? 'active'">
+									<a th:href="@{/news(page=${i})}" th:text="${i + 1}"></a>
+								</li>
+								<li th:if="${newsPage.hasNext()}">
+									<a th:href="@{/news(page=${newsPage.getNumber() + 1})}" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								</li>
+								<li th:if="${newsPage.hasNext()}">
+									<a th:href="@{/news(page=${newsPage.getTotalPages() - 1})}">마지막 페이지</a>
+								</li>
+							</ul>
+						</div>
+						<div class="contentsButton">
+							<th:block th:if="${session.userId != null}">
+								<form action="/write" method="get" style="float: right;"
+									th:if="${session.userAuthority != '징계중'}">
+									<input type="hidden" name="boardId" value="news" />
+									<button type="submit">게시글 작성</button>
+								</form>
+							</th:block>
+							<div class="searchBox">
+								<button onclick="toggleSearch()">검색</button>
+								<div id="searchInput" style="display: none;">
+									<select id="category">
+										<option value="title">제목</option>
+										<option value="contents">내용</option>
+										<option value="nickname">닉네임</option>
+									</select>
+									<input type="text" id="searchKeyword" placeholder="검색어를 입력하세요">
+									<button onclick="search()">검색</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--notice-->
+					<div th:if="${boardType == 'notice' && noticePage != null}">
+						<div class="contentsHeader">
+							<span th:text="공지사항"></span>
+						</div>
+						<div class="boardFrame">
+							<div class="TitleAndDate">
+								<div th:utext="${#temporals.format(date, 'yyyy-MM-dd')}" class="FrameDate"></div>
+								<div th:utext="${title}" style="width: 580px;"></div>
+							</div>
+							<div class="PostId">
+								번호:<div th:utext="${noticeId}"></div>
+							</div>
+							<div class="NicknameAndView">
+								<div class="boardFrameViewCount">조회수:<div th:utext="${viewCount}"></div>
+								</div>
+								<div th:utext="${nickname}"></div>
+							</div>
+							<hr style="width: 100%;">
+							<div>
+								<div th:utext="${contents}" class="boardFrameContents"></div>
+							</div>
+						</div>
+						<hr style="width: 95%;">
+						<div class="buttons">
+							<form th:action="@{/post/update}" method="post" th:if="${session.userNickname == nickname}">
+								<input type="hidden" name="boardType" th:value="'notice'" />
+								<input type="hidden" name="postId" th:value="${noticeId}" />
+								<button type="submit">수정</button>
+							</form>
+							<form th:action="@{/post/delete}" method="post"
+								th:if="${session.userNickname == nickname or session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+								<input type="hidden" name="boardId" th:value="'notice'" />
+								<input type="hidden" name="postId" th:value="${noticeId}" />
+								<button type="submit">삭제</button>
+							</form>
+							<button onclick="window.location.href='/notice'">목록</button>
+						</div>
+						<table style="margin: auto;">
+							<thead>
+								<tr>
+									<th style="width: 50px;">번호</th>
+									<th style="width: 360px;">제목</th>
+									<th style="width: 110px;">글쓴이</th>
+									<th style="width: 160px;">날짜</th>
+								</tr>
+							</thead>
+							<tbody id="listTable">
+								<tr th:each="notice : ${noticePage.content}" th:with="postId=${notice.noticeId}">
+									<td style="width: 50px; text-align: center;" th:text="${notice.noticeId}">
+									</td>
+									<td style="width: 350px; text-align: left;">
+										<a th:href="@{'/notice/' + ${notice.noticeId}}"
+											th:text="${#strings.length(notice.title) &gt; 23 ? #strings.substring(notice.title, 0, 23) + '...' : notice.title}"></a>
+									</td>
+									<td style="width: 130px; text-align: center;" th:text="${notice.nickname}">
+									</td>
+									<td style="width: 140px; text-align: center;"
+										th:text="${notice.date != null ? #temporals.format(notice.date, 'yyyy-MM-dd') : ''}">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pagination">
+							<ul style="display: flex; gap: 15px; justify-content: center; list-style-type: none;">
+								<li th:if="${noticePage.hasPrevious()}">
+									<a th:href="@{/notice(page=0)}">첫 페이지</a>
+								</li>
+								<li th:if="${noticePage.hasPrevious()}">
+									<a th:href="@{/notice(page=${noticePage.getNumber() - 1})}" aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+								</li>
+								<li th:each="i : ${#numbers.sequence(0, noticePage.getTotalPages() - 1)}"
+									th:class="${noticePage.number == i} ? 'active'">
+									<a th:href="@{/notice(page=${i})}" th:text="${i + 1}"></a>
+								</li>
+								<li th:if="${noticePage.hasNext()}">
+									<a th:href="@{/notice(page=${noticePage.getNumber() + 1})}" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								</li>
+								<li th:if="${noticePage.hasNext()}">
+									<a th:href="@{/notice(page=${noticePage.getTotalPages() - 1})}">마지막 페이지</a>
+								</li>
+							</ul>
+						</div>
+						<div class="contentsButton">
+							<form action="/write" method="get" style="float: right;"
+								th:if="${session.userAuthority == '운영자'}">
+								<input type="hidden" name="boardId" value="notice" />
+								<button type="submit">게시글 작성</button>
+							</form>
+							<div class="searchBox">
+								<button onclick="toggleSearch()">검색</button>
+								<div id="searchInput" style="display: none;">
+									<select id="category">
+										<option value="title">제목</option>
+										<option value="contents">내용</option>
+										<option value="nickname">닉네임</option>
+									</select>
+									<input type="text" id="searchKeyword" placeholder="검색어를 입력하세요">
+									<button onclick="search()">검색</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--video-->
+					<div th:if="${boardType == 'video' && videoPage != null}">
+						<div class="contentsHeader">
+							<span th:text="영상"></span>
+						</div>
+						<div class="boardFrame">
+							<div class="TitleAndDate">
+								<div th:utext="${#temporals.format(date, 'yyyy-MM-dd')}" class="FrameDate"></div>
+								<div th:utext="${title}" style="width: 580px;"></div>
+							</div>
+							<div class="PostId">
+								번호:<div th:utext="${videoId}"></div>
+							</div>
+							<div class="NicknameAndView">
+								<div class="boardFrameViewCount">조회수:<div th:utext="${viewCount}"></div>
+								</div>
+								<div th:utext="${nickname}"></div>
+							</div>
+							<hr style="width: 100%;">
+							<div>
+								<div th:utext="${contents}" class="boardFrameContents"></div>
+							</div>
+						</div>
+						<hr style="width: 95%;">
+						<div class="buttons">
+							<form th:action="@{/post/update}" method="post" th:if="${session.userNickname == nickname}">
+								<input type="hidden" name="boardType" th:value="'video'" />
+								<input type="hidden" name="postId" th:value="${videoId}" />
+								<button type="submit">수정</button>
+							</form>
+							<form th:action="@{/post/delete}" method="post"
+								th:if="${session.userNickname == nickname or session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+								<input type="hidden" name="boardId" th:value="'video'" />
+								<input type="hidden" name="postId" th:value="${videoId}" />
+								<button type="submit">삭제</button>
+							</form>
+							<button onclick="window.location.href='/video'">목록</button>
+						</div>
+						<div class="reply">
+							<span style="margin: 10px;">댓글</span>
+							<table id="commentTable" class="table" style="border-top:1px dashed darkgrey ">
+								<tbody>
+									<!-- 각 댓글에 대한 반복문 -->
+									<tr th:each="comment : ${comments}" class="commentTr"
+										style="gap:0px; width:680px !important;">
+
+										<td th:utext="${comment.commentId}" style="display: none;"></td>
+										<td th:utext="${comment.nickname}" style="width: 130px; margin-left: 10px;">
+										</td>
+										<td style="position: relative; left: 150px;bottom: 23px;"
+											th:utext="${comment.date != null ? #temporals.format(comment.date, 'yyyy-MM-dd') : ''}">
+										</td>
+										<!-- 수정 및 삭제 버튼 -->
+										<td style="position: relative; left: 260px; bottom: 47px;">
+											<button onclick="editComment(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">수정</button>
+											<button onclick="deleteRow(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">삭제</button>
+										</td>
+										<td style="position: relative; left: 10px; bottom: 25px;">
+											<span id="commentContents-${comment.commentId}"
+												th:utext="${comment.contents}"></span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="comment">
+								<textarea id="commentContents" style="width: 97%; height: 80px; margin:10px"></textarea>
+								<th:block th:if="${session.userId != null}">
+									<button class="insertComment" onclick="insertComment()"
+										th:if="${session.userAuthority != '징계중'}">댓글 등록</button>
+								</th:block>
+							</div>
+						</div>
+						<table style="margin: auto;">
+							<thead>
+								<tr>
+									<th style="width: 50px;">번호</th>
+									<th style="width: 360px;">제목</th>
+									<th style="width: 110px;">글쓴이</th>
+									<th style="width: 160px;">날짜</th>
+								</tr>
+							</thead>
+							<tbody id="listTable">
+								<tr th:each="video : ${videoPage.content}" th:with="postId=${video.videoId}">
+									<td style="width: 50px; text-align: center;" th:text="${video.videoId}">
+									</td>
+									<td style="width: 350px; text-align: left;">
+										<a th:href="@{'/video/' + ${video.videoId}}"
+											th:text="${#strings.length(video.title) &gt; 23 ? #strings.substring(video.title, 0, 23) + '...' : video.title}"></a>
+										<span th:if="${commentCounts.containsKey(video.videoId)}"
+											th:text="${'[' + commentCounts.get(video.videoId) + ']'}"></span>
+									</td>
+									<td style="width: 130px; text-align: center;" th:text="${video.nickname}">
+									</td>
+									<td style="width: 140px; text-align: center;"
+										th:text="${video.date != null ? #temporals.format(video.date, 'yyyy-MM-dd') : ''}">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pagination">
+							<ul style="display: flex; gap: 15px; justify-content: center; list-style-type: none;">
+								<li th:if="${videoPage.hasPrevious()}">
+									<a th:href="@{/video(page=0)}">첫 페이지</a>
+								</li>
+								<li th:if="${videoPage.hasPrevious()}">
+									<a th:href="@{/video(page=${videoPage.getNumber() - 1})}" aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+								</li>
+								<li th:each="i : ${#numbers.sequence(0, videoPage.getTotalPages() - 1)}"
+									th:class="${videoPage.number == i} ? 'active'">
+									<a th:href="@{/video(page=${i})}" th:text="${i + 1}"></a>
+								</li>
+								<li th:if="${videoPage.hasNext()}">
+									<a th:href="@{/video(page=${videoPage.getNumber() + 1})}" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								</li>
+								<li th:if="${videoPage.hasNext()}">
+									<a th:href="@{/video(page=${videoPage.getTotalPages() - 1})}">마지막 페이지</a>
+								</li>
+							</ul>
+						</div>
+						<div class="contentsButton">
+							<th:block th:if="${session.userId != null}">
+								<form action="/write" method="get" style="float: right;"
+									th:if="${session.userAuthority != '징계중'}">
+									<input type="hidden" name="boardId" value="video" />
+									<button type="submit">게시글 작성</button>
+								</form>
+							</th:block>
+							<div class="searchBox">
+								<button onclick="toggleSearch()">검색</button>
+								<div id="searchInput" style="display: none;">
+									<select id="category">
+										<option value="title">제목</option>
+										<option value="contents">내용</option>
+										<option value="nickname">닉네임</option>
+									</select>
+									<input type="text" id="searchKeyword" placeholder="검색어를 입력하세요">
+									<button onclick="search()">검색</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--matchday-->
+					<div th:if="${boardType == 'matchday' && matchdayPage != null}">
+						<div class="contentsHeader">
+							<span th:text="매치데이"></span>
+						</div>
+						<div class="boardFrame">
+							<div class="TitleAndDate">
+								<div th:utext="${#temporals.format(date, 'yyyy-MM-dd')}" class="FrameDate"></div>
+								<div th:utext="${title}" style="width: 580px;"></div>
+							</div>
+							<div class="PostId">
+								번호:<div th:utext="${matchdayId}"></div>
+							</div>
+							<div class="NicknameAndView">
+								<div class="boardFrameViewCount">조회수:<div th:utext="${viewCount}"></div>
+								</div>
+								<div th:utext="${nickname}"></div>
+							</div>
+							<hr style="width: 100%;">
+							<div>
+								<div th:utext="${contents}" class="boardFrameContents"></div>
+							</div>
+						</div>
+						<hr style="width: 95%;">
+						<div class="buttons">
+							<form th:action="@{/post/update}" method="post" th:if="${session.userNickname == nickname}">
+								<input type="hidden" name="boardType" th:value="'matchday'" />
+								<input type="hidden" name="postId" th:value="${matchdayId}" />
+								<button type="submit">수정</button>
+							</form>
+							<form th:action="@{/post/delete}" method="post"
+								th:if="${session.userNickname == nickname or session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+								<input type="hidden" name="boardId" th:value="'matchday'" />
+								<input type="hidden" name="postId" th:value="${matchdayId}" />
+								<button type="submit">삭제</button>
+							</form>
+							<button onclick="window.location.href='/matchday'">목록</button>
+						</div>
+						<div class="reply">
+							<span style="margin: 10px;">댓글</span>
+							<table id="commentTable" class="table" style="border-top:1px dashed darkgrey ">
+								<tbody>
+									<!-- 각 댓글에 대한 반복문 -->
+									<tr th:each="comment : ${comments}" class="commentTr"
+										style="gap:0px; width:680px !important;">
+
+										<td th:utext="${comment.commentId}" style="display: none;"></td>
+										<td th:utext="${comment.nickname}" style="width: 130px; margin-left: 10px;">
+										</td>
+										<td style="position: relative; left: 150px;bottom: 23px;"
+											th:utext="${comment.date != null ? #temporals.format(comment.date, 'yyyy-MM-dd') : ''}">
+										</td>
+										<!-- 수정 및 삭제 버튼 -->
+										<td style="position: relative; left: 260px; bottom: 47px;">
+											<button onclick="editComment(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">수정</button>
+											<button onclick="deleteRow(this)"
+												th:style="${session.userNickname ne comment.nickname ? 'visibility: hidden;' : 'visibility: visible;'}">삭제</button>
+										</td>
+										<td style="position: relative; left: 10px; bottom: 25px;">
+											<span id="commentContents-${comment.commentId}"
+												th:utext="${comment.contents}"></span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="comment">
+								<textarea id="commentContents" style="width: 97%; height: 80px; margin:10px"></textarea>
+								<th:block th:if="${session.userId != null}">
+									<button class="insertComment" onclick="insertComment()"
+										th:if="${session.userAuthority != '징계중'}">댓글 등록</button>
+								</th:block>
+							</div>
+						</div>
+						<table style="margin: auto;">
+							<thead>
+								<tr>
+									<th style="width: 50px;">번호</th>
+									<th style="width: 360px;">제목</th>
+									<th style="width: 110px;">글쓴이</th>
+									<th style="width: 160px;">날짜</th>
+								</tr>
+							</thead>
+							<tbody id="listTable">
+								<tr th:each="matchday : ${matchdayPage.content}"
+									th:with="postId=${matchday.matchdayId}">
+									<td style="width: 50px; text-align: center;" th:text="${matchday.matchdayId}">
+									</td>
+									<td style="width: 350px; text-align: left;">
+										<a th:href="@{'/matchday/' + ${matchday.matchdayId}}"
+											th:text="${#strings.length(matchday.title) &gt; 23 ? #strings.substring(matchday.title, 0, 23) + '...' : matchday.title}"></a>
+										<span th:if="${commentCounts.containsKey(matchday.matchdayId)}"
+											th:text="${'[' + commentCounts.get(matchday.matchdayId) + ']'}"></span>
+									</td>
+									<td style="width: 130px; text-align: center;" th:text="${matchday.nickname}">
+									</td>
+									<td style="width: 140px; text-align: center;"
+										th:text="${matchday.date != null ? #temporals.format(matchday.date, 'yyyy-MM-dd') : ''}">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pagination">
+							<ul style="display: flex; gap: 15px; justify-content: center; list-style-type: none;">
+								<li th:if="${matchdayPage.hasPrevious()}">
+									<a th:href="@{/matchday(page=0)}">첫 페이지</a>
+								</li>
+								<li th:if="${matchdayPage.hasPrevious()}">
+									<a th:href="@{/matchday(page=${matchdayPage.getNumber() - 1})}"
+										aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+								</li>
+								<li th:each="i : ${#numbers.sequence(0, matchdayPage.getTotalPages() - 1)}"
+									th:class="${matchdayPage.number == i} ? 'active'">
+									<a th:href="@{/matchday(page=${i})}" th:text="${i + 1}"></a>
+								</li>
+								<li th:if="${matchdayPage.hasNext()}">
+									<a th:href="@{/matchday(page=${matchdayPage.getNumber() + 1})}" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								</li>
+								<li th:if="${matchdayPage.hasNext()}">
+									<a th:href="@{/matchday(page=${matchdayPage.getTotalPages() - 1})}">마지막 페이지</a>
+								</li>
+							</ul>
+						</div>
+						<div class="contentsButton">
+							<th:block th:if="${session.userId != null}">
+								<form action="/write" method="get" style="float: right;"
+									th:if="${session.userAuthority != '징계중'}">
+									<input type="hidden" name="boardId" value="matchday" />
+									<button type="submit">게시글 작성</button>
+								</form>
+							</th:block>
+							<div class="searchBox">
+								<button onclick="toggleSearch()">검색</button>
+								<div id="searchInput" style="display: none;">
+									<select id="category">
+										<option value="title">제목</option>
+										<option value="contents">내용</option>
+										<option value="nickname">닉네임</option>
+									</select>
+									<input type="text" id="searchKeyword" placeholder="검색어를 입력하세요">
+									<button onclick="search()">검색</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--게시판 끝-->
+				</div>
+			</div>
+			<div class="right">
+				<div class="menu">
+					<div class="menuHeader">
+						<span th:text="메뉴"></span>
+					</div>
+					<div class="menuContents">
+						<ul>
+							<hr />
+							<li>
+								<a th:href="@{/notice}" class="">공지사항</a>
+							</li>
+							<hr />
+							<li>
+								<ul>컨텐츠
+									<li><a th:href="@{/news}" class="">뉴스</a></li>
+									<li><a th:href="@{/video}" class="">영상</a></li>
+								</ul>
+							</li>
+
+							<hr />
+							<li>
+								<ul>게시판
+									<li><a th:href="@{/board1}" class="">축구이야기</a></li>
+									<li><a th:href="@{/board2}" class="">사는이야기</a></li>
+									<li><a th:href="@{/matchday}" class="">매치데이</a></li>
+								</ul>
+							</li>
+							<hr />
+							<li>
+								<ul>정보
+									<li><a th:href="@{/profile}" class="">프로필</li>
+									<li><a th:href="@{/stadium}" class="">경기장</li>
+									<li><a th:href="@{/manager}" class="">감독</li>
+									<li><a th:href="@{/squad}" class="">스쿼드</li>
+								</ul>
+							</li>
+							<hr />
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<label class="copyRight">
+				<a th:href="@{/admin}" class="copy1">Admin Page</a>
+				<span> | </span>
+				<a th:href="@{/punish}" class="copy1">Punishiment Log</a>
+				<span> | </span>
+				<a th:href="@{/about}" class="copy1">About 툰코리아</a>
+				</br>
+				<span class="copy2">이 페이지는 개인프로젝트 페이지입니다</span>
+			</label>
+		</div>
+	</div>
+</body>
+<script>
+	function logOut() {
+		// Ajax를 사용하여 로그아웃 요청을 서버에 보냄
+		$.ajax({
+			type: 'POST',
+			url: '/logout',
+			success: function (response) {
+				if (response === 'success') {
+					// 성공적으로 로그아웃한 경우, 페이지 리로드
+					location.reload();
+
+					// 페이지 리로드 후 메인 페이지로 이동
+					window.location.href = '/main';
+				} else {
+					// 실패한 경우에 대한 처리
+					console.error('로그아웃 실패');
+				}
+			},
+			error: function (error) {
+				// 에러 발생 시에 대한 처리
+				console.error('로그아웃 요청 에러', error);
+			}
+		});
+	}
+
+
+	function insertComment() {
+		var url = window.location.href;
+		var boardType = url.split('/')[3]; // 예: localhost:8080/{boardType}/{boardId}
+		var boardId = url.split('/')[4];
+		var contents = $("#commentContents").val();
+		var nickname = $("#userNickname").text().trim().replace("님", ""); // 사용자의 닉네임 가져오기
+		var currentDate = new Date(); // 현재 날짜와 시간 가져오기
+
+		// 입력값 확인
+		if (!contents || contents.trim() === '') {
+			alert("댓글 내용을 입력해주세요.");
+			return;
+		}
+
+		$.ajax({
+			url: "/post/addComment",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({
+				boardType: boardType,
+				detailId: boardId,
+				contents: contents,
+				nickname: nickname,
+				date: currentDate // 현재 날짜와 시간을 사용합니다.
+			}),
+			success: function (response) {
+				alert("댓글이 추가되었습니다.");
+				location.reload();
+				// 댓글 추가 후 추가적인 작업 수행
+			},
+			error: function (xhr, status, error) {
+				alert("댓글 추가에 실패하였습니다.");
+			}
+		});
+	}
+
+
+	// 댓글 수정 함수
+	function editComment(button) {
+		// 클릭된 버튼이 속한 댓글의 행을 찾음
+		var row = $(button).closest('tr');
+
+		// 댓글 내용 셀을 찾아서 내용을 가져옴
+		var commentContent = row.find('span');
+
+		// 댓글 내용을 입력 필드로 변경
+		var currentContent = commentContent.text();
+		commentContent.html('<textarea id="commentContents" style="width: 95%; height: 80px; margin:10px">' + currentContent + '</textarea>');
+
+
+		// 수정 버튼을 수정 완료 버튼으로 변경
+		button.innerText = '수정 완료';
+		button.onclick = function () {
+			// 수정 완료 버튼을 누를 때, 행에서 commentId를 가져와서 함께 전송
+			var commentId = row.find('td:first').text();
+			saveEditedComment(commentId, row);
+		};
+	}
+
+	// 수정된 댓글을 저장하는 함수
+	function saveEditedComment(commentId, row) {
+		// 수정된 내용 가져오기
+		var newContent = row.find('textarea#commentContents').val();
+
+		// 입력값 확인
+		if (!newContent || newContent.trim() === '') {
+			alert("수정할 내용을 입력해주세요.");
+			return;
+		}
+
+		// AJAX를 사용하여 서버로 수정된 내용을 전송
+		$.ajax({
+			type: "POST",
+			url: "/post/updateComment",
+			data: {
+				commentId: commentId,
+				newContent: newContent
+			},
+			success: function (response) {
+				// 수정 성공 처리
+				alert("댓글이 성공적으로 수정되었습니다.");
+				// 페이지 새로고침
+				location.reload();
+			},
+			error: function (xhr, status, error) {
+				// 수정 실패 처리
+				alert("댓글 수정에 실패했습니다. 다시 시도해주세요.");
+			}
+		});
+	}
+
+	function deleteRow(button) {
+		// 탈퇴 버튼이 속한 행의 코멘트 ID 가져오기
+		var commentId = $(button).closest('tr').find('td:eq(0)').text();
+		deleteComment(commentId);
+	}
+
+	function deleteComment(commentId) {
+		// 삭제 확인 다이얼로그
+		if (confirm('정말로 삭제하시겠습니까?')) {
+			// 서버로 삭제 요청 전송
+			$.ajax({
+				type: 'POST',
+				url: '/post/deleteComment',
+				data: {commentId: commentId},
+				success: function (response) {
+					if (response === "success") {
+						// 삭제 성공 알림
+						alert("댓글이 삭제되었습니다.");
+						// 삭제 성공 시 페이지 새로고침
+						location.reload();
+					} else {
+						// 삭제 실패 시 메시지 표시
+						alert("댓글 삭제에 실패했습니다.");
+					}
+				},
+				error: function () {
+					alert("요청을 처리하는 중 오류가 발생했습니다.");
+				}
+			});
+		}
+	}
+
+	function toggleSearch() {
+		var searchInput = document.getElementById('searchInput');
+		searchInput.style.display = (searchInput.style.display === 'none' || searchInput.style.display === '') ? 'block' : 'none';
+	}
+
+	function search() {
+		var category = document.getElementById('category').value;
+		var keyword = document.getElementById('searchKeyword').value;
+
+		// 현재 페이지 URL에서 경로를 추출
+		var currentPath = window.location.pathname;
+		var boardType = currentPath.split('/')[1]; // 예: localhost:8080/{boardType}/search
+
+		// 추출된 경로에 따라 boardType 값을 결정
+		var newUrl = '/' + boardType + '/search?category=' + category + '&keyword=' + keyword;
+
+		// 새로운 URL로 이동
+		window.location.href = newUrl;
+	}
+
+
+</script>
+
+</html>

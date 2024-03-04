@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" th:href="@{/vars.css}" />
+	<link rel="stylesheet" th:href="@{/style.css}" />
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<title>툰 코리아</title>
+</head>
+
+<body>
+	<div class="toon">
+		<div class="header">
+			<a th:href="@{/main}" class="headerLogo">
+				<img th:src="@{images/logo1.png}">
+			</a>
+			<div class="headerSubject">
+				<div class="headerTitle">대한민국 모든 툰 아미들의 외침 툰 코리아</div>
+				<img th:src="@{images/headerBg.jpg}" class="headerBg">
+			</div>
+		</div>
+		<div class="mainFrame">
+			<div class="left">
+				<div class="login">
+					<div class="loginHeader">
+						<span th:text="로그인"></span><br />
+					</div>
+					<form action="/login" id="loginForm" class="loginContents" method="post"
+						th:if="${session.userId == null}">
+						<div class="loginBox">
+							<div class="idPw">
+								<input type="text" class="id" name="id" placeholder="Id" />
+								<input type="password" class="pass" name="pass" placeholder="Password" />
+							</div>
+							<input type="submit" value="로그인" class="buttonLogin" />
+						</div>
+						<div class="loginEtc">
+							<a th:href="@{/join}" class="buttonJoin">회원가입</a>
+							<a th:href="@{/idpwSearch}" class="searchIdpw">ID/PW 찾기</a>
+						</div>
+					</form>
+					<div th:if="${session.userId != null}" id="userInfo">
+						<div th:each="user : ${userList}">
+							<div th:if="${session.userId eq user.id}">
+								<div th:text="${user.nickname + '님'}" id="userNickname"></div>
+								<button onclick="logOut()" class="buttonLogout">로그아웃</button>
+								<div th:text="'레벨: ' + ${user.userLevel}" id="userLevel"></div>
+								<div th:text="'포인트: ' + ${user.userPoint}" id="userPoint"></div>
+								<div th:text="${user.userAuthority}" id="userAuthority"></div>
+								<a th:href="@{/mypage}">내 정보로 이동</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="notice">
+					<div class="noticeHeader">
+						<span th:text="공지사항"></span>
+						<a th:href="@{/notice}" class="more">더보기</a>
+						<br />
+					</div>
+					<div class="noticeContents">
+						<table>
+							<tbody>
+								<tr th:each="notice : ${noticeList}">
+									<td th:text="${notice.noticeId}" style="display: none;"></td>
+									<td class=mainTrNoticeTitle>
+										<span>-</span>
+										<a th:href="@{'/notice/' + ${notice.noticeId}}"
+											th:text="${#strings.length(notice.title) &gt; 12 ? #strings.substring(notice.title, 0, 12) + '...' : notice.title}"></a>
+									</td>
+									<td th:text="${notice.nickname}" style="display: none;"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="banner">
+					<div class="bannerHeader">
+						<span th:text="배너"></span>
+					</div>
+					<div class="bannerContents">
+						<div class="banner1">
+							<a th:href="@{https://www.youtube.com/@NUFC}" target="_blank">
+								<img th:src="@{images/newcastleYoutube.jpg}">
+							</a>
+						</div>
+						<div class="banner2">
+							<a th:href="@{https://www.instagram.com/nufc/}" target="_blank">
+								<img th:src="@{images/newcastleInsta.png}">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="center">
+				<div class="contents">
+					<div class="contentsHeader">
+						<span th:text="회원관리"></span>
+					</div>
+					<div class="contentsContents" style="margin: 0px; width: 720px !important;">
+						<!-- 관리자 권한 없을때-->
+						<div th:unless="${session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+							<p>접근권한이 없습니다.</p>
+							<button onclick="window.location.href='/main'">메인페이지로 이동</button>
+						</div>
+						<!--// 관리자 권한 있을때-->
+						<div th:if="${session.userAuthority == '운영자' or session.userAuthority == '관리자'}">
+							<table>
+								<tr>
+									<th style="width: 90px;">회원ID</th>
+									<th style="width: 130px;">닉네임</th>
+									<th style="width: 150px;">이메일</th>
+									<th style="width: 40px;">레벨</th>
+									<th style="width: 70px;">권한</th>
+									<th style="width: 48px;">수정</th>
+									<th style="width: 48px;">탈퇴</th>
+								</tr>
+								<tr th:each="user : ${users}">
+									<td th:text="${user.id}" style="width: 90px; text-align: center;">회원ID</td>
+									<td th:text="${user.nickname}" style="width: 130px; text-align: center;">닉네임</td>
+									<td th:text="${user.email}" style="width: 150px; text-align: center;">이메일</td>
+									<td th:text="${user.userLevel}" style="width: 40px; text-align: center;">레벨</td>
+									<td id="authorityCell" style="width: 70px; text-align: center;">
+										<span th:text="${user.userAuthority}">권한</span> <!-- 권한을 텍스트로 표시합니다. -->
+									</td>
+									<td th:style="${user.userAuthority == '운영자'} ? 'visibility: hidden;' : ''"
+										style="width: 48px;"><button onclick="editUser(this)">수정</button></td>
+
+									<td th:style="${user.userAuthority == '운영자'} ? 'visibility: hidden;' : ''"
+										style="width: 48px;"><button onclick="deleteRow(this)">탈퇴</button>
+									</td>
+								</tr>
+							</table>
+							<div class="pagination">
+								<ul style="display: flex; gap: 15px; justify-content: center; list-style-type: none;">
+									<li th:if="${page.first}">
+										<a th:href="@{/admin(page=0)}">첫 페이지</a>
+									</li>
+									<li th:if="${page.hasPrevious()}">
+										<a th:href="@{/admin(page=${page.number - 1})}" aria-label="Previous">
+											<span aria-hidden="true">&laquo;</span>
+										</a>
+									</li>
+									<li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+										th:class="${page.number == i} ? 'active'">
+										<a th:href="@{/admin(page=${i})}" th:text="${i + 1}"></a>
+									</li>
+									<li th:if="${page.hasNext()}">
+										<a th:href="@{/admin(page=${page.number + 1})}" aria-label="Next">
+											<span aria-hidden="true">&raquo;</span>
+										</a>
+									</li>
+									<li th:if="${page.hasNext()}">
+										<a th:href="@{/admin(page=${page.totalPages - 1})}">마지막 페이지</a>
+									</li>
+								</ul>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="right">
+				<div class="menu">
+					<div class="menuHeader">
+						<span th:text="메뉴"></span>
+					</div>
+					<div class="menuContents">
+						<ul>
+							<hr />
+							<li>
+								<a th:href="@{/notice}" class="">공지사항</a>
+							</li>
+							<hr />
+							<li>
+								<ul>컨텐츠
+									<li><a th:href="@{/news}" class="">뉴스</a></li>
+									<li><a th:href="@{/video}" class="">영상</a></li>
+								</ul>
+							</li>
+
+							<hr />
+							<li>
+								<ul>게시판
+									<li><a th:href="@{/board1}" class="">축구이야기</a></li>
+									<li><a th:href="@{/board2}" class="">사는이야기</a></li>
+									<li><a th:href="@{/matchday}" class="">매치데이</a></li>
+								</ul>
+							</li>
+							<hr />
+							<li>
+								<ul>정보
+									<li><a th:href="@{/profile}" class="">프로필</li>
+									<li><a th:href="@{/stadium}" class="">경기장</li>
+									<li><a th:href="@{/manager}" class="">감독</li>
+									<li><a th:href="@{/squad}" class="">스쿼드</li>
+								</ul>
+							</li>
+							<hr />
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<label class="copyRight">
+				<a th:href="@{/admin}" class="copy1">Admin Page</a>
+				<span> | </span>
+				<a th:href="@{/punish}" class="copy1">Punishiment Log</a>
+				<span> | </span>
+				<a th:href="@{/about}" class="copy1">About 툰코리아</a>
+				</br>
+				<span class="copy2">이 페이지는 개인프로젝트 페이지입니다</span>
+			</label>
+		</div>
+	</div>
+</body>
+<script>
+	function logOut() {
+		// Ajax를 사용하여 로그아웃 요청을 서버에 보냄
+		$.ajax({
+			type: 'POST',
+			url: '/logout',
+			success: function (response) {
+				if (response === 'success') {
+					// 성공적으로 로그아웃한 경우, 페이지 리로드
+					location.reload();
+
+					// 페이지 리로드 후 메인 페이지로 이동
+					window.location.href = '/main';
+				} else {
+					// 실패한 경우에 대한 처리
+					console.error('로그아웃 실패');
+				}
+			},
+			error: function (error) {
+				// 에러 발생 시에 대한 처리
+				console.error('로그아웃 요청 에러', error);
+			}
+		});
+	}
+
+	function deleteRow(button) {
+		// 탈퇴 버튼이 속한 행의 사용자 ID 가져오기
+		var id = $(button).closest('tr').find('td:eq(0)').text();
+		deleteUser(id);
+	}
+
+	function deleteUser(id) {
+		if (confirm("정말로 이 사용자를 삭제하시겠습니까?")) {
+			// AJAX 요청을 통해 사용자 삭제
+			$.ajax({
+				type: "POST",
+				url: "/deleteUser",
+				data: {id: id},
+				success: function (response) {
+					if (response === "success") {
+						// 삭제 성공 알림
+						alert("사용자가 삭제되었습니다.");
+						// 삭제 성공 시 페이지 새로고침						
+						location.reload();
+					} else {
+						// 삭제 실패 시 메시지 표시
+						alert("사용자 삭제에 실패했습니다.");
+					}
+				},
+				error: function () {
+					alert("요청을 처리하는 중 오류가 발생했습니다.");
+				}
+			});
+		}
+	}
+
+	function editUser(button) {
+		var row = button.parentNode.parentNode; // 현재 행 가져오기
+		var id = row.cells[0].innerText; // 사용자 ID 가져오기
+		var authorityCell = row.cells[4]; // 권한 셀 가져오기
+		var currentAuthority = authorityCell.innerText; // 현재 권한 값 가져오기
+
+		// 셀렉트 박스 생성 및 삽입
+		var selectBox = document.createElement('select');
+		selectBox.id = 'authoritySelect';
+		var option1 = document.createElement('option');
+		option1.value = '관리자';
+		option1.text = '관리자';
+		var option2 = document.createElement('option');
+		option2.value = '일반회원';
+		option2.text = '일반회원';
+		var option3 = document.createElement('option');
+		option3.value = '징계중';
+		option3.text = '징계중';
+		selectBox.appendChild(option1);
+		selectBox.appendChild(option2);
+		selectBox.appendChild(option3);
+		authorityCell.innerHTML = ''; // 셀 내용 비우기
+		authorityCell.appendChild(selectBox);
+
+		// 수정 버튼 클릭 시 권한 업데이트
+		button.onclick = function () {
+			var selectedAuthority = selectBox.value; // 선택된 권한 값 가져오기
+
+			// AJAX 요청을 통해 사용자 권한 업데이트
+			$.ajax({
+				type: "POST",
+				url: "/updateUserAuthority", // 사용자 권한을 업데이트하는 엔드포인트로 변경해야 합니다.
+				data: {id: id, authority: selectedAuthority},
+				success: function (response) {
+					if (response === "success") {
+						alert("사용자의 권한이 성공적으로 업데이트되었습니다.");
+						// 페이지를 새로 고침하여 변경된 권한을 반영합니다.
+						location.reload();
+					} else {
+						alert("사용자의 권한을 업데이트하는 데 실패했습니다.");
+					}
+				},
+				error: function () {
+					alert("요청을 처리하는 중 오류가 발생했습니다.");
+				}
+			});
+		}
+	}
+
+
+</script>
+
+</html>

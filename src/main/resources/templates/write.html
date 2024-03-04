@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" th:href="@{/vars.css}" />
+	<link rel="stylesheet" th:href="@{/style.css}" />
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script th:src="@{/ckeditor/ckeditor.js}"></script>
+
+	<title>툰 코리아</title>
+	<style>
+		.container {
+			width: 1000px;
+			margin: 20px auto;
+		}
+
+		.ck-editor__editable[role="textbox"] {
+			/* editing area */
+			min-height: 200px;
+		}
+
+		.ck-content .image {
+			/* block images */
+			max-width: 80%;
+			margin: 20px auto;
+		}
+
+		ul,
+		li {
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+		}
+
+		.container li {
+			padding: 10px 0;
+		}
+
+		#title {
+			width: 100%;
+		}
+
+		#contents {
+			width: 300px;
+			/* 텍스트 영역의 가로 크기 지정 */
+			height: 200px;
+			/* 텍스트 영역의 세로 크기 지정 */
+			overflow-y: scroll;
+			/* 세로 스크롤 활성화 */
+		}
+	</style>
+</head>
+
+<body>
+	<div class="toon">
+		<div class="header">
+			<a th:href="@{/main}" class="headerLogo">
+				<img th:src="@{images/logo1.png}">
+			</a>
+			<div class="headerSubject">
+				<div class="headerTitle">대한민국 모든 툰 아미들의 외침 툰 코리아</div>
+				<img th:src="@{images/headerBg.jpg}" class="headerBg">
+			</div>
+		</div>
+		<div class="mainFrame">
+			<div class="left">
+				<div class="login">
+					<div class="loginHeader">
+						<span th:text="로그인"></span><br />
+					</div>
+					<form action="/login" id="loginForm" class="loginContents" method="post"
+						th:if="${session.userId == null}">
+						<div class="loginBox">
+							<div class="idPw">
+								<input type="text" class="id" name="id" placeholder="Id" />
+								<input type="password" class="pass" name="pass" placeholder="Password" />
+							</div>
+							<input type="submit" value="로그인" class="buttonLogin" />
+						</div>
+						<div class="loginEtc">
+							<a th:href="@{/join}" class="buttonJoin">회원가입</a>
+							<a th:href="@{/idpwSearch}" class="searchIdpw">ID/PW 찾기</a>
+						</div>
+					</form>
+					<div th:if="${session.userId != null}" id="userInfo">
+						<div th:each="user : ${userList}">
+							<div th:if="${session.userId eq user.id}">
+								<div th:text="${user.nickname + '님'}" id="userNickname"></div>
+								<button onclick="logOut()" class="buttonLogout">로그아웃</button>
+								<div th:text="'레벨: ' + ${user.userLevel}" id="userLevel"></div>
+								<div th:text="'포인트: ' + ${user.userPoint}" id="userPoint"></div>
+								<div th:text="${user.userAuthority}" id="userAuthority"></div>
+								<a th:href="@{/mypage}">내 정보로 이동</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="notice">
+					<div class="noticeHeader">
+						<span th:text="공지사항"></span>
+						<a th:href="@{/notice}" class="more">더보기</a>
+						<br />
+					</div>
+					<div class="noticeContents">
+						<table>
+							<tbody>
+								<tr th:each="notice : ${noticeList}">
+									<td th:text="${notice.noticeId}" style="display: none;"></td>
+									<td class=mainTrNoticeTitle>
+										<span>-</span>
+										<a th:href="@{'/notice/' + ${notice.noticeId}}"
+											th:text="${#strings.length(notice.title) &gt; 12 ? #strings.substring(notice.title, 0, 12) + '...' : notice.title}"></a>
+									</td>
+									<td th:text="${notice.nickname}" style="display: none;"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="banner">
+					<div class="bannerHeader">
+						<span th:text="배너"></span>
+					</div>
+					<div class="bannerContents">
+						<div class="banner1">
+							<a th:href="@{https://www.youtube.com/@NUFC}" target="_blank">
+								<img th:src="@{images/newcastleYoutube.jpg}">
+							</a>
+						</div>
+						<div class="banner2">
+							<a th:href="@{https://www.instagram.com/nufc/}" target="_blank">
+								<img th:src="@{images/newcastleInsta.png}">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="center">
+				<div class="contents">
+					<form action="/post/write" method="post" enctype="multipart/form-data"
+						onsubmit="return checkTitle()">
+						<ul>
+							<input type="hidden" name="boardId" id="boardIdInput" />
+							<input type="hidden" name="userId" value="${session.userId}" />
+							<input type="hidden" name="userNickname" value="${session.userNickname}" />
+
+							<li>제목</li>
+							<li><input type="text" name="title" id="title" required></li>
+							<li>글 내용</li>
+							<li><textarea name="contents" id="contents" required></textarea></li>
+							<input type="file" name="image" style="display: none;">
+							<li>
+								<input type="button" value="취소" onclick="cancelWrite()">
+								<input type="submit" value="등록" onclick="checkContents(event)" style="float: right;;">
+							</li>
+						</ul>
+					</form>
+				</div>
+			</div>
+			<div class="right">
+				<div class="menu">
+					<div class="menuHeader">
+						<span th:text="메뉴"></span>
+					</div>
+					<div class="menuContents">
+						<ul>
+							<hr />
+							<li>
+								<a th:href="@{/notice}" class="">공지사항</a>
+							</li>
+							<hr />
+							<li>
+								<ul>컨텐츠
+									<li><a th:href="@{/news}" class="">뉴스</a></li>
+									<li><a th:href="@{/video}" class="">영상</a></li>
+								</ul>
+							</li>
+
+							<hr />
+							<li>
+								<ul>게시판
+									<li><a th:href="@{/board1}" class="">축구이야기</a></li>
+									<li><a th:href="@{/board2}" class="">사는이야기</a></li>
+									<li><a th:href="@{/matchday}" class="">매치데이</a></li>
+								</ul>
+							</li>
+							<hr />
+							<li>
+								<ul>정보
+									<li><a th:href="@{/profile}" class="">프로필</li>
+									<li><a th:href="@{/stadium}" class="">경기장</li>
+									<li><a th:href="@{/manager}" class="">감독</li>
+									<li><a th:href="@{/squad}" class="">스쿼드</li>
+								</ul>
+							</li>
+							<hr />
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<label class="copyRight">
+				<a th:href="@{/admin}" class="copy1">Admin Page</a>
+				<span> | </span>
+				<a th:href="@{/punish}" class="copy1">Punishiment Log</a>
+				<span> | </span>
+				<a th:href="@{/about}" class="copy1">About 툰코리아</a>
+				</br>
+				<span class="copy2">이 페이지는 개인프로젝트 페이지입니다</span>
+			</label>
+		</div>
+	</div>
+</body>
+<script>
+
+	CKEDITOR.replace('contents', {
+		filebrowserUploadUrl: '/editor/fileupload.do', // 이미지 업로드 URL 설정
+		autoGrow_onStartup: true // 에디터가 초기화될 때 자동으로 세로 크기 조절
+	});
+
+	function logOut() {
+		// Ajax를 사용하여 로그아웃 요청을 서버에 보냄
+		$.ajax({
+			type: 'POST',
+			url: '/logout',
+			success: function (response) {
+				if (response === 'success') {
+					// 성공적으로 로그아웃한 경우, 페이지 리로드
+					location.reload();
+
+					// 페이지 리로드 후 메인 페이지로 이동
+					window.location.href = '/main';
+				} else {
+					// 실패한 경우에 대한 처리
+					console.error('로그아웃 실패');
+				}
+			},
+			error: function (error) {
+				// 에러 발생 시에 대한 처리
+				console.error('로그아웃 요청 에러', error);
+			}
+		});
+	}
+
+	// 페이지 로드 시 실행
+	document.addEventListener('DOMContentLoaded', function () {
+		// boardId 값을 가져와서 input 요소에 설정
+		var boardId = getBoardIdFromURL();
+		document.getElementById('boardIdInput').value = boardId;
+
+		// 사용자 ID와 사용자 닉네임을 가져와서 input 요소에 설정
+		var id = "${session.id}";
+		var nickname = "${session.nickname}";
+		document.querySelector('input[name="id"]').value = id;
+		document.querySelector('input[name="nickname"]').value = nickname;
+	});
+
+	// 보드값을 가져가기 URL에서 boardId 값을 가져오는 함수
+	function getBoardIdFromURL() {
+		var urlParams = new URLSearchParams(window.location.search);
+		return urlParams.get('boardId');
+	}
+
+	// 취소 버튼 클릭 시 실행되는 함수
+	function cancelWrite() {
+		// boardId 값을 가져와서 URL을 생성
+		var boardId = getBoardIdFromURL();
+		var redirectURL = '/' + boardId;
+
+		// 해당 경로로 이동
+		window.location.href = redirectURL;
+
+	}
+
+	function checkContents(event) {
+		var editorData = CKEDITOR.instances.contents.getData();
+		if (editorData.length < 28) {
+			alert("글 내용은 20자 이상입니다.");
+			event.preventDefault(); // 폼 제출을 막음
+		}
+	}
+
+	$(document).ready(function () {
+		$("#title").on("input", function () {
+			checkTitleLength();
+		});
+	});
+
+	function checkTitleLength() {
+		var title = $("#title").val();
+
+		if (title.length > 40) {
+			alert("제목은 40글자 이하로 설정해야합니다.");
+		}
+	}
+
+
+
+
+
+
+
+</script>
+
+</html>
